@@ -9,13 +9,25 @@ const [video, setVideo] = useState("");
 const [socialMedia, setSocialMedia] = useState("");
 const [browsing, setBrowsing] = useState("");
 const [daydreaming, setDaydreaming] = useState("");
-const [result, setResult] = useState<any>(null);
-const [showResult, setShowResult] = useState(false);
 const router = useRouter();
 function calculateTime() {
   const userAge = Number(age);
   if (userAge < 1 || userAge > 120) {
   alert("Masukkan usia antara 1 dan 120 tahun.");
+  return;
+}
+  const dailyTotal =
+  Number(gaming) +
+  Number(video) +
+  Number(socialMedia) +
+  Number(browsing) +
+  Number(daydreaming);
+if (dailyTotal === 0) {
+  alert("Masukkan setidaknya satu aktivitas.");
+  return;
+}
+if (dailyTotal > 24) {
+  alert("Total aktivitas tidak boleh lebih dari 24 jam per hari.");
   return;
 }
   const activeYears = Math.max(userAge - 10, 0);
@@ -192,34 +204,6 @@ return (
   className="mt-8 rounded-xl bg-white px-8 py-4 text-lg font-semibold text-black hover:bg-gray-200">
         Hitung Waktu Saya
       </button>
-      {result && (
-  <div className="mt-8 text-center">
-
-    <p>Gaming: {result.gamingHours.toLocaleString()} jam</p>
-
-    <p>Video: {result.videoHours.toLocaleString()} jam</p>
-
-    <p>Social Media: {result.socialMediaHours.toLocaleString()} jam</p>
-
-    <p>Browsing: {result.browsingHours.toLocaleString()} jam</p>
-
-    <p>Ngelamun: {result.daydreamingHours.toLocaleString()} jam</p>
-
-    <hr className="my-4" />
-
-    <p className="text-2xl font-bold">
-      Total: {result.totalHours.toLocaleString()} jam
-    </p>
-    <p className="mt-2">
-  ≈ {result.totalDays.toLocaleString()} hari
-</p>
-
-<p className="mt-2 text-xl">
-  ≈ {result.totalYears.toFixed(2)} tahun hidup
-</p>
-
-  </div>
-)}
-    </main>
+          </main>
   );
 }
