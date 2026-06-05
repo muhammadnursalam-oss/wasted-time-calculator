@@ -13,6 +13,8 @@ export default function Home() {
   const [daydreaming, setDaydreaming] = useState("");
   const router = useRouter();
 
+  const trimmedName = name.trim();
+  const isNameMissing = trimmedName.length === 0;
   const userAge = Number(age);
   const isAgeInvalid = age !== "" && (userAge < 10 || userAge > 120);
   const dailyTotal =
@@ -22,9 +24,13 @@ export default function Home() {
     Number(browsing) +
     Number(daydreaming);
   const isDailyTotalInvalid = dailyTotal === 0 || dailyTotal > 24;
-  const hasFormError = isAgeInvalid || isDailyTotalInvalid;
+  const hasFormError = isNameMissing || isAgeInvalid || isDailyTotalInvalid;
 
   function calculateTime() {
+    if (isNameMissing) {
+      return;
+    }
+
     if (userAge < 10 || userAge > 120) {
       alert("masukan usia antara 10-120");
       return;
@@ -35,9 +41,17 @@ export default function Home() {
       return;
     }
 
-    router.push(
-      `/result?gaming=${gaming}&video=${video}&socialMedia=${socialMedia}&browsing=${browsing}&daydreaming=${daydreaming}&age=${age}`
-    );
+    const params = new URLSearchParams({
+      name: trimmedName,
+      gaming,
+      video,
+      socialMedia,
+      browsing,
+      daydreaming,
+      age,
+    });
+
+    router.push(`/result?${params.toString()}`);
   }
 
   return (
@@ -90,11 +104,15 @@ export default function Home() {
                   placeholder="Masukkan nama..."
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/20"
+                  className={`w-full rounded-2xl border bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:ring-2 ${
+                    isNameMissing
+                      ? "border-red-500/80 focus:border-red-400 focus:ring-red-500/20"
+                      : "border-white/10 focus:border-amber-300/70 focus:ring-amber-300/20"
+                  }`}
                 />
-                {name && (
+                {trimmedName && (
                   <p className="mt-3 text-sm text-amber-100/90">
-                    Halo, {name}
+                    Halo, {trimmedName}
                   </p>
                 )}
               </div>
@@ -194,9 +212,9 @@ export default function Home() {
                 </p>
               </div>
 
-              <button
-                onClick={calculateTime}
-                disabled={hasFormError}
+                <button
+                  onClick={calculateTime}
+                  disabled={hasFormError}
                 className={`inline-flex w-full items-center justify-center rounded-2xl px-5 py-4 text-base font-semibold transition ${
                   hasFormError
                     ? "cursor-not-allowed bg-slate-600 text-slate-300"

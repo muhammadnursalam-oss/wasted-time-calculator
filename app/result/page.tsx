@@ -7,6 +7,11 @@ import {
   AchievementResult,
   getAchievementResult,
 } from "./utils/achievements";
+import {
+  createResultRecord,
+  getResultRecordById,
+  type ResultRecord,
+} from "./utils/results";
 
 type Category = {
   label: string;
@@ -30,13 +35,20 @@ export default function ResultPage() {
 
 function ResultContent() {
   const params = useSearchParams();
+  const [storedRecord, setStoredRecord] = useState<ResultRecord | null>(null);
   const [achievementResult, setAchievementResult] =
     useState<AchievementResult | null>(null);
   const [isAchievementLoading, setIsAchievementLoading] = useState(true);
   const [achievementError, setAchievementError] = useState("");
   const [displayedHours, setDisplayedHours] = useState(0);
   const [shareFeedback, setShareFeedback] = useState("");
+  const [resultId, setResultId] = useState(params.get("id") || "");
+  const [isLoadingStoredRecord, setIsLoadingStoredRecord] = useState(
+    Boolean(params.get("id"))
+  );
 
+  const recordIdFromUrl = params.get("id") || "";
+  const name = (params.get("name") || "").trim();
   const age = Number(params.get("age") || 0);
   const gaming = Number(params.get("gaming") || 0);
   const video = Number(params.get("video") || 0);
@@ -62,54 +74,176 @@ function ResultContent() {
   const totalYears = totalDays / 365;
   const rank = getTimeRank(totalHours);
 
-  const categories: Category[] = useMemo(
-    () => [
-      { label: "Gaming", emoji: "🎮", hours: gamingHours },
-      { label: "Video", emoji: "🎬", hours: videoHours },
-      { label: "Social Media", emoji: "📱", hours: socialMediaHours },
-      { label: "Browsing", emoji: "🌐", hours: browsingHours },
-      { label: "Daydreaming", emoji: "💭", hours: daydreamingHours },
-    ],
+  const previewRecord = useMemo<ResultRecord>(
+    () => ({
+      id: "",
+      createdAt: "",
+      name,
+      age,
+      gaming: gamingHours,
+      video: videoHours,
+      socialMedia: socialMediaHours,
+      browsing: browsingHours,
+      daydreaming: daydreamingHours,
+      totalHours,
+      totalDays,
+      totalYears,
+      rankName: rank?.name || "-",
+      rankDescription: rank?.description || "-",
+      achievementTitle: achievementResult?.title || "",
+      achievementDescription: achievementResult?.description || "",
+    }),
     [
+      age,
+      achievementResult?.description,
+      achievementResult?.title,
       browsingHours,
       daydreamingHours,
       gamingHours,
+      name,
+      rank?.description,
+      rank?.name,
       socialMediaHours,
+      totalDays,
+      totalHours,
+      totalYears,
       videoHours,
     ]
+  );
+
+  const renderRecord = storedRecord ?? previewRecord;
+
+  const categories: Category[] = useMemo(
+    () => [
+      { label: "Gaming", emoji: "🎮", hours: renderRecord.gaming },
+      { label: "Video", emoji: "🎬", hours: renderRecord.video },
+      {
+        label: "Social Media",
+        emoji: "📱",
+        hours: renderRecord.socialMedia,
+      },
+      { label: "Browsing", emoji: "🌐", hours: renderRecord.browsing },
+      {
+        label: "Daydreaming",
+        emoji: "💭",
+        hours: renderRecord.daydreaming,
+      },
+    ], [renderRecord.browsing, renderRecord.daydreaming, renderRecord.gaming, renderRecord.socialMedia, renderRecord.video]
   );
 
   useEffect(() => {
     let isActive = true;
 
-    async function loadAchievementResult() {
-      setIsAchievementLoading(true);
-      setAchievementError("");
-
+    async function loadFromDatabase(id: string) {
       try {
-        const result = await getAchievementResult(totalHours);
+        const record = await getResultRecordById(id);
 
-        if (isActive) {
-          setAchievementResult(result);
+        if (!isActive) {
+          return;
         }
+
+        if (record) {
+          setStoredRecord(record);
+          setAchievementResult({
+            title: record.achievementTitle,
+            description: record.achievementDescription,
+          });
+          setResultId(record.id);
+          return;
+        }
+
+        setAchievementError("Hasil tidak ditemukan.");
       } catch {
         if (isActive) {
-          setAchievementError("Gagal membuat achievement preview.");
-          setAchievementResult(null);
+          setAchievementError("Gagal memuat hasil tersimpan.");
         }
       } finally {
         if (isActive) {
+          setIsLoadingStoredRecord(false);
           setIsAchievementLoading(false);
         }
       }
     }
 
-    loadAchievementResult();
+    async function createAndStoreResult() {
+      if (!name) {
+        setAchievementError("Nama wajib diisi.");
+        setIsAchievementLoading(false);
+        return;
+      }
+
+      setIsAchievementLoading(true);
+      setAchievementError("");
+
+      try {
+        const achievement = await getAchievementResult(totalHours);
+
+        if (!isActive) {
+          return;
+        }
+
+        setAchievementResult(achievement);
+
+        const savedRecord = await createResultRecord({
+          name,
+          age,
+          gaming: gamingHours,
+          video: videoHours,
+          socialMedia: socialMediaHours,
+          browsing: browsingHours,
+          daydreaming: daydreamingHours,
+          totalHours,
+          totalDays,
+          totalYears,
+          rankName: rank?.name || "-",
+          rankDescription: rank?.description || "-",
+          achievementTitle: achievement.title,
+          achievementDescription: achievement.description,
+        });
+
+        if (!isActive) {
+          return;
+        }
+
+        setStoredRecord(savedRecord);
+        setResultId(savedRecord.id);
+        window.history.replaceState(null, "", `/result?id=${savedRecord.id}`);
+      } catch {
+        if (isActive) {
+          setAchievementError("Gagal membuat achievement preview.");
+        }
+      } finally {
+        if (isActive) {
+          setIsAchievementLoading(false);
+          setIsLoadingStoredRecord(false);
+        }
+      }
+    }
+
+    if (recordIdFromUrl) {
+      loadFromDatabase(recordIdFromUrl);
+    } else {
+      createAndStoreResult();
+    }
 
     return () => {
       isActive = false;
     };
-  }, [totalHours]);
+  }, [
+    age,
+    browsingHours,
+    daydreamingHours,
+    gamingHours,
+    name,
+    rank?.description,
+    rank?.name,
+    recordIdFromUrl,
+    socialMediaHours,
+    totalDays,
+    totalHours,
+    totalYears,
+    videoHours,
+  ]);
 
   useEffect(() => {
     let frame = 0;
@@ -119,7 +253,7 @@ function ResultContent() {
     function tick(now: number) {
       const progress = Math.min((now - start) / duration, 1);
       const easeOut = 1 - Math.pow(1 - progress, 3);
-      setDisplayedHours(totalHours * easeOut);
+      setDisplayedHours(renderRecord.totalHours * easeOut);
 
       if (progress < 1) {
         frame = window.requestAnimationFrame(tick);
@@ -131,36 +265,45 @@ function ResultContent() {
     return () => {
       window.cancelAnimationFrame(frame);
     };
-  }, [totalHours]);
+  }, [renderRecord.totalHours]);
 
   const formattedDisplayedHours = Math.round(displayedHours).toLocaleString();
-
-  const shareText = achievementResult?.title
-    ? `I spent ${totalHours.toLocaleString()} hours on autopilot. Achievement: ${achievementResult.title}. Built with Wasted Time Calculator.`
-    : `I spent ${totalHours.toLocaleString()} hours on autopilot. Achievement preview is still loading. Built with Wasted Time Calculator.`;
+  const shareText = renderRecord.achievementTitle
+    ? `I spent ${renderRecord.totalHours.toLocaleString()} hours on autopilot. Achievement: ${renderRecord.achievementTitle}. Built with Wasted Time Calculator.`
+    : `I spent ${renderRecord.totalHours.toLocaleString()} hours on autopilot. Built with Wasted Time Calculator.`;
 
   async function handleShareResult() {
-    const shareUrl = window.location.href;
+    const absoluteShareUrl = resultId
+      ? `${window.location.origin}/result?id=${resultId}`
+      : window.location.href;
 
     try {
       if (navigator.share) {
         await navigator.share({
           title: "Wasted Time Calculator Result",
           text: shareText,
-          url: shareUrl,
+          url: absoluteShareUrl,
         });
         setShareFeedback("Link dibagikan.");
         window.setTimeout(() => setShareFeedback(""), 2200);
         return;
       }
 
-      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      await navigator.clipboard.writeText(`${shareText} ${absoluteShareUrl}`);
       setShareFeedback("Link disalin.");
     } catch {
       setShareFeedback("Gagal membagikan hasil.");
     }
 
     window.setTimeout(() => setShareFeedback(""), 2200);
+  }
+
+  if (recordIdFromUrl && isLoadingStoredRecord) {
+    return (
+      <main className="flex min-h-screen items-center justify-center px-6 text-white">
+        <p className="text-slate-300">Memuat hasil tersimpan...</p>
+      </main>
+    );
   }
 
   return (
@@ -196,17 +339,22 @@ function ResultContent() {
                 Ini bukan sekadar angka. Ini adalah jejak jam hidup yang sudah
                 berubah jadi kebiasaan, keterampilan, dan jejak cerita.
               </p>
+              {renderRecord.name && (
+                <p className="mt-3 text-sm uppercase tracking-[0.3em] text-amber-200/85">
+                  {renderRecord.name}
+                </p>
+              )}
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
-              <StatCard label="Rank" value={rank?.name || "-"} />
+              <StatCard label="Rank" value={renderRecord.rankName || "-"} />
               <StatCard
                 label="Total Hari"
-                value={`${totalDays.toLocaleString()} hari`}
+                value={`${renderRecord.totalDays.toLocaleString()} hari`}
               />
               <StatCard
                 label="Total Tahun"
-                value={`${totalYears.toFixed(2)} tahun`}
+                value={`${renderRecord.totalYears.toFixed(2)} tahun`}
               />
             </div>
 
@@ -222,7 +370,7 @@ function ResultContent() {
                 </div>
               </div>
 
-              {isAchievementLoading && (
+              {isAchievementLoading && !renderRecord.achievementTitle && (
                 <p className="text-slate-300">Membuat achievement terbaik...</p>
               )}
 
@@ -230,13 +378,13 @@ function ResultContent() {
                 <p className="text-red-300">{achievementError}</p>
               )}
 
-              {achievementResult && !isAchievementLoading && (
+              {renderRecord.achievementTitle && (
                 <>
                   <p className="text-lg font-semibold text-white">
-                    {achievementResult.title}
+                    {renderRecord.achievementTitle}
                   </p>
                   <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-300">
-                    {achievementResult.description}
+                    {renderRecord.achievementDescription}
                   </p>
                 </>
               )}
@@ -245,7 +393,8 @@ function ResultContent() {
                 <button
                   type="button"
                   onClick={handleShareResult}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-200/30 bg-amber-300/10 px-4 py-3 text-sm font-semibold text-amber-50 transition hover:bg-amber-300/20"
+                  disabled={!resultId}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-200/30 bg-amber-300/10 px-4 py-3 text-sm font-semibold text-amber-50 transition hover:bg-amber-300/20 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <span aria-hidden="true">↗</span>
                   Share ke Sosial Media
@@ -301,8 +450,8 @@ function ResultContent() {
                 </span>
               </div>
               <p className="mt-2 text-sm leading-6 text-slate-300">
-                ≈ {totalDays.toLocaleString()} hari atau {totalYears.toFixed(2)}{" "}
-                tahun hidup.
+                ≈ {renderRecord.totalDays.toLocaleString()} hari atau{" "}
+                {renderRecord.totalYears.toFixed(2)} tahun hidup.
               </p>
             </div>
           </aside>
