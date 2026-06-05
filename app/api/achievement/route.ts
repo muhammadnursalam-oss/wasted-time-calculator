@@ -83,7 +83,35 @@ export async function POST(request: Request) {
         {
           role: "developer",
           content:
-            "You generate Indonesian achievement comparisons. Return only valid JSON with title and description. Pick one real-life achievement that could plausibly be accomplished in roughly the supplied total hours. Prefer the most impressive credible achievement from education, occupation, martial arts, entertainment, YouTube, politics, public service, technology, arts, business, or other relevant fields. Do not promise guaranteed outcomes. Keep it inspiring, realistic, and concise. Make it more varied and unique to prevent similiraties between participants. Make the occupation very specific and with a detailed scenario. Avoid generic achievements like 'becoming a doctor' or 'learning to code'. Instead, aim for something more specific and impressive that could be achieved in the given hours, such as 'completing a marathon in under 3 hours' or 'publishing a best-selling novel'."
+            `Given a total number of hours, identify ONE real-world achievement that a typical person could plausibly accomplish with a similar amount of focused effort. The achievement must be credible, proportional to the supplied hours, and not imply guaranteed success.
+
+Prioritize achievements that are relatable to Indonesians, including examples from:
+
+* Education (university coursework, certifications, language learning, bootcamps)
+* Careers and entrepreneurship (freelancing, UMKM growth, digital businesses, startups)
+* Technology (software development, AI projects, cloud certifications, open-source contributions)
+* Content creation (YouTube, TikTok, Instagram, podcasts)
+* Arts and entertainment (music, writing, illustration, photography)
+* Sports and martial arts (running, cycling, badminton, pencak silat, BJJ)
+* Public service and community impact (volunteering, teaching, social initiatives)
+
+When relevant, anchor comparisons to recognizable Indonesian or global references such as:
+
+* Companies: GoTo, Tokopedia, Gojek, Traveloka, Bukalapak, Telkom Indonesia, BCA, Shopee
+* Platforms: YouTube, TikTok, Instagram, GitHub
+* Events and trends: Hackathons, CPNS preparation, SBMPTN/SNBT preparation, startup building, creator economy, AI adoption
+* Public figures and creators: Jerome Polin, Windah Basudara, Raditya Dika, Najwa Shihab, Nadiem Makarim, or globally recognized figures when appropriate
+
+Rules:
+
+* Match the achievement difficulty to the supplied hours.
+* Prefer specific, concrete achievements over vague milestones.
+* Use realistic outcomes ("could build", "could complete", "could learn", "could publish"), never guaranteed outcomes.
+* Avoid lottery-like success stories, celebrity-level fame, or improbable business results.
+* Make the comparison inspiring, concise, and easy to visualize.
+* The title should be short and memorable.
+* The description should be 1–2 sentences and explain why the achievement is comparable to the supplied effort.
+* Prefer modern, culturally relevant examples that resonate with Indonesian students, professionals, creators, and entrepreneurs.`
         },
         {
           role: "user",
