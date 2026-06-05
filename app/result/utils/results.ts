@@ -1,5 +1,6 @@
 export type ResultRecord = {
   id: string;
+  fingerprint: string;
   name: string;
   age: number;
   gaming: number;
@@ -19,6 +20,16 @@ export type ResultRecord = {
 
 export type ResultInput = Omit<ResultRecord, "id" | "createdAt">;
 
+export class ResultAttemptLimitError extends Error {
+  record: ResultRecord | null;
+
+  constructor(message: string, record: ResultRecord | null) {
+    super(message);
+    this.name = "ResultAttemptLimitError";
+    this.record = record;
+  }
+}
+
 export async function createResultRecord(
   input: ResultInput
 ): Promise<ResultRecord> {
@@ -29,6 +40,18 @@ export async function createResultRecord(
     },
     body: JSON.stringify(input),
   });
+
+  if (response.status === 409) {
+    const payload = (await response.json()) as {
+      message?: string;
+      record?: ResultRecord;
+    };
+
+    throw new ResultAttemptLimitError(
+      payload.message || "Kamu sudah pernah mencoba tes ini sebelumnya.",
+      payload.record ?? null
+    );
+  }
 
   if (!response.ok) {
     throw new Error("Failed to save result record.");

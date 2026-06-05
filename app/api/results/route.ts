@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   getResultRecordById,
+  getResultRecordByFingerprint,
   saveResultRecord,
   type ResultRecord,
 } from "@/lib/result-store";
@@ -19,8 +20,10 @@ function parseInput(body: unknown): ResultInput | null {
 
   const data = body as Record<string, unknown>;
   const name = typeof data.name === "string" ? data.name.trim() : "";
+  const fingerprint =
+    typeof data.fingerprint === "string" ? data.fingerprint.trim() : "";
 
-  if (!name) {
+  if (!name || !fingerprint) {
     return null;
   }
 
@@ -67,6 +70,7 @@ function parseInput(body: unknown): ResultInput | null {
     rankDescription: data.rankDescription.trim(),
     achievementTitle: data.achievementTitle.trim(),
     achievementDescription: data.achievementDescription.trim(),
+    fingerprint,
   };
 }
 
@@ -92,6 +96,18 @@ export async function POST(request: Request) {
 
   if (!input) {
     return NextResponse.json({ error: "Invalid result payload." }, { status: 400 });
+  }
+
+  const existingRecord = await getResultRecordByFingerprint(input.fingerprint);
+
+  if (existingRecord) {
+    return NextResponse.json(
+      {
+        message: "Kamu sudah pernah mencoba tes ini sebelumnya.",
+        record: existingRecord,
+      },
+      { status: 409 }
+    );
   }
 
   const record: ResultRecord = {

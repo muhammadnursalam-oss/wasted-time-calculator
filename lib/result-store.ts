@@ -4,6 +4,7 @@ import path from "path";
 
 export type ResultRecord = {
   id: string;
+  fingerprint: string;
   name: string;
   age: number;
   gaming: number;
@@ -31,6 +32,7 @@ const sql =
 const createTableSql = `
   CREATE TABLE IF NOT EXISTS result_records (
     id TEXT PRIMARY KEY,
+    fingerprint TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
     age INTEGER NOT NULL,
     gaming DOUBLE PRECISION NOT NULL,
@@ -55,11 +57,20 @@ async function ensureDatabase() {
   }
 
   await sql.query(createTableSql, []);
+  await sql.query(
+    `ALTER TABLE result_records ADD COLUMN IF NOT EXISTS fingerprint TEXT`,
+    []
+  );
+  await sql.query(
+    `CREATE UNIQUE INDEX IF NOT EXISTS result_records_fingerprint_idx ON result_records (fingerprint)`,
+    []
+  );
 }
 
 function rowToRecord(row: Record<string, unknown>): ResultRecord {
   return {
     id: String(row.id),
+    fingerprint: String(row.fingerprint),
     name: String(row.name),
     age: Number(row.age),
     gaming: Number(row.gaming),
@@ -92,6 +103,7 @@ async function readLocalResults(): Promise<ResultRecord[]> {
         typeof item === "object" &&
         item !== null &&
         typeof (item as ResultRecord).id === "string" &&
+        typeof (item as ResultRecord).fingerprint === "string" &&
         typeof (item as ResultRecord).name === "string"
       );
     });
@@ -113,6 +125,7 @@ export async function saveResultRecord(
     await sql`
       INSERT INTO result_records (
         id,
+        fingerprint,
         name,
         age,
         gaming,
@@ -130,6 +143,7 @@ export async function saveResultRecord(
         created_at
       ) VALUES (
         ${record.id},
+        ${record.fingerprint},
         ${record.name},
         ${record.age},
         ${record.gaming},
@@ -166,6 +180,7 @@ export async function getResultRecordById(
     const rows = await sql`
       SELECT
         id,
+        fingerprint,
         name,
         age,
         gaming,
@@ -192,4 +207,41 @@ export async function getResultRecordById(
 
   const results = await readLocalResults();
   return results.find((record) => record.id === id) ?? null;
+}
+
+export async function getResultRecordByFingerprint(
+  fingerprint: string
+): Promise<ResultRecord | null> {
+  if (sql) {
+    await ensureDatabase();
+    const rows = await sql`
+      SELECT
+        id,
+        fingerprint,
+        name,
+        age,
+        gaming,
+        video,
+        social_media,
+        browsing,
+        daydreaming,
+        total_hours,
+        total_days,
+        total_years,
+        rank_name,
+        rank_description,
+        achievement_title,
+        achievement_description,
+        created_at
+      FROM result_records
+      WHERE fingerprint = ${fingerprint}
+      LIMIT 1
+    `;
+
+    const row = rows[0] as Record<string, unknown> | undefined;
+    return row ? rowToRecord(row) : null;
+  }
+
+  const results = await readLocalResults();
+  return results.find((record) => record.fingerprint === fingerprint) ?? null;
 }

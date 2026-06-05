@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getTimeRank } from "./utils/rank";
 import {
@@ -10,8 +10,10 @@ import {
 import {
   createResultRecord,
   getResultRecordById,
+  ResultAttemptLimitError,
   type ResultRecord,
 } from "./utils/results";
+import { generateBrowserFingerprint } from "./utils/fingerprint";
 
 type Category = {
   label: string;
@@ -35,19 +37,21 @@ export default function ResultPage() {
 
 function ResultContent() {
   const params = useSearchParams();
+  const recordIdFromUrl = params.get("id") || "";
+
   const [storedRecord, setStoredRecord] = useState<ResultRecord | null>(null);
   const [achievementResult, setAchievementResult] =
     useState<AchievementResult | null>(null);
-  const [isAchievementLoading, setIsAchievementLoading] = useState(true);
-  const [achievementError, setAchievementError] = useState("");
-  const [displayedHours, setDisplayedHours] = useState(0);
-  const [shareFeedback, setShareFeedback] = useState("");
-  const [resultId, setResultId] = useState(params.get("id") || "");
-  const [isLoadingStoredRecord, setIsLoadingStoredRecord] = useState(
-    Boolean(params.get("id"))
+  const [isAchievementLoading, setIsAchievementLoading] = useState(
+    !recordIdFromUrl
   );
+  const [isLoadingStoredRecord, setIsLoadingStoredRecord] = useState(
+    Boolean(recordIdFromUrl)
+  );
+  const [displayedHours, setDisplayedHours] = useState(0);
+  const [toastMessage, setToastMessage] = useState("");
+  const [resultId, setResultId] = useState(recordIdFromUrl);
 
-  const recordIdFromUrl = params.get("id") || "";
   const name = (params.get("name") || "").trim();
   const age = Number(params.get("age") || 0);
   const gaming = Number(params.get("gaming") || 0);
@@ -74,67 +78,45 @@ function ResultContent() {
   const totalYears = totalDays / 365;
   const rank = getTimeRank(totalHours);
 
-  const previewRecord = useMemo<ResultRecord>(
-    () => ({
-      id: "",
-      createdAt: "",
-      name,
-      age,
-      gaming: gamingHours,
-      video: videoHours,
-      socialMedia: socialMediaHours,
-      browsing: browsingHours,
-      daydreaming: daydreamingHours,
-      totalHours,
-      totalDays,
-      totalYears,
-      rankName: rank?.name || "-",
-      rankDescription: rank?.description || "-",
-      achievementTitle: achievementResult?.title || "",
-      achievementDescription: achievementResult?.description || "",
-    }),
-    [
-      age,
-      achievementResult?.description,
-      achievementResult?.title,
-      browsingHours,
-      daydreamingHours,
-      gamingHours,
-      name,
-      rank?.description,
-      rank?.name,
-      socialMediaHours,
-      totalDays,
-      totalHours,
-      totalYears,
-      videoHours,
-    ]
-  );
+  const previewRecord: ResultRecord = {
+    id: "",
+    fingerprint: "",
+    name,
+    age,
+    gaming: gamingHours,
+    video: videoHours,
+    socialMedia: socialMediaHours,
+    browsing: browsingHours,
+    daydreaming: daydreamingHours,
+    totalHours,
+    totalDays,
+    totalYears,
+    rankName: rank?.name || "-",
+    rankDescription: rank?.description || "-",
+    achievementTitle: achievementResult?.title || "",
+    achievementDescription: achievementResult?.description || "",
+    createdAt: "",
+  };
 
   const renderRecord = storedRecord ?? previewRecord;
 
-  const categories: Category[] = useMemo(
-    () => [
-      { label: "Gaming", emoji: "🎮", hours: renderRecord.gaming },
-      { label: "Video", emoji: "🎬", hours: renderRecord.video },
-      {
-        label: "Social Media",
-        emoji: "📱",
-        hours: renderRecord.socialMedia,
-      },
-      { label: "Browsing", emoji: "🌐", hours: renderRecord.browsing },
-      {
-        label: "Daydreaming",
-        emoji: "💭",
-        hours: renderRecord.daydreaming,
-      },
-    ], [renderRecord.browsing, renderRecord.daydreaming, renderRecord.gaming, renderRecord.socialMedia, renderRecord.video]
-  );
+  const categories: Category[] = [
+    { label: "Gaming", emoji: "🎮", hours: renderRecord.gaming },
+    { label: "Video", emoji: "🎬", hours: renderRecord.video },
+    { label: "Social Media", emoji: "📱", hours: renderRecord.socialMedia },
+    { label: "Browsing", emoji: "🌐", hours: renderRecord.browsing },
+    { label: "Daydreaming", emoji: "💭", hours: renderRecord.daydreaming },
+  ];
+
+  function pushToast(message: string) {
+    setToastMessage(message);
+    window.setTimeout(() => setToastMessage(""), 2400);
+  }
 
   useEffect(() => {
     let isActive = true;
 
-    async function loadFromDatabase(id: string) {
+    async function loadStoredResult(id: string) {
       try {
         const record = await getResultRecordById(id);
 
@@ -142,20 +124,20 @@ function ResultContent() {
           return;
         }
 
-        if (record) {
-          setStoredRecord(record);
-          setAchievementResult({
-            title: record.achievementTitle,
-            description: record.achievementDescription,
-          });
-          setResultId(record.id);
+        if (!record) {
+          pushToast("Hasil tidak ditemukan.");
           return;
         }
 
-        setAchievementError("Hasil tidak ditemukan.");
+        setStoredRecord(record);
+        setAchievementResult({
+          title: record.achievementTitle,
+          description: record.achievementDescription,
+        });
+        setResultId(record.id);
       } catch {
         if (isActive) {
-          setAchievementError("Gagal memuat hasil tersimpan.");
+          pushToast("Gagal memuat hasil tersimpan.");
         }
       } finally {
         if (isActive) {
@@ -167,15 +149,15 @@ function ResultContent() {
 
     async function createAndStoreResult() {
       if (!name) {
-        setAchievementError("Nama wajib diisi.");
+        pushToast("Nama wajib diisi.");
         setIsAchievementLoading(false);
         return;
       }
 
       setIsAchievementLoading(true);
-      setAchievementError("");
 
       try {
+        const fingerprint = await generateBrowserFingerprint();
         const achievement = await getAchievementResult(totalHours);
 
         if (!isActive) {
@@ -185,6 +167,7 @@ function ResultContent() {
         setAchievementResult(achievement);
 
         const savedRecord = await createResultRecord({
+          fingerprint,
           name,
           age,
           gaming: gamingHours,
@@ -208,9 +191,22 @@ function ResultContent() {
         setStoredRecord(savedRecord);
         setResultId(savedRecord.id);
         window.history.replaceState(null, "", `/result?id=${savedRecord.id}`);
-      } catch {
-        if (isActive) {
-          setAchievementError("Gagal membuat achievement preview.");
+      } catch (error) {
+        if (!isActive) {
+          return;
+        }
+
+        if (error instanceof ResultAttemptLimitError && error.record) {
+          setStoredRecord(error.record);
+          setAchievementResult({
+            title: error.record.achievementTitle,
+            description: error.record.achievementDescription,
+          });
+          setResultId(error.record.id);
+          window.history.replaceState(null, "", `/result?id=${error.record.id}`);
+          pushToast(error.message);
+        } else {
+          pushToast("Gagal membuat achievement preview.");
         }
       } finally {
         if (isActive) {
@@ -221,7 +217,7 @@ function ResultContent() {
     }
 
     if (recordIdFromUrl) {
-      loadFromDatabase(recordIdFromUrl);
+      loadStoredResult(recordIdFromUrl);
     } else {
       createAndStoreResult();
     }
@@ -268,13 +264,14 @@ function ResultContent() {
   }, [renderRecord.totalHours]);
 
   const formattedDisplayedHours = Math.round(displayedHours).toLocaleString();
+  const shareId = resultId || renderRecord.id;
   const shareText = renderRecord.achievementTitle
-    ? `I spent ${renderRecord.totalHours.toLocaleString()} hours on autopilot. Achievement: ${renderRecord.achievementTitle}. Built with Wasted Time Calculator.`
-    : `I spent ${renderRecord.totalHours.toLocaleString()} hours on autopilot. Built with Wasted Time Calculator.`;
+    ? `Halo! Aku baru saja cek Wasted Time Calculator dan hasilku menunjukkan ${renderRecord.totalHours.toLocaleString()} jam waktu autopilot. Achievement-ku: ${renderRecord.achievementTitle}. Yuk lihat juga hasilmu.`
+    : `Halo! Aku baru saja cek Wasted Time Calculator dan hasilku menunjukkan ${renderRecord.totalHours.toLocaleString()} jam waktu autopilot. Yuk lihat juga hasilmu.`;
 
   async function handleShareResult() {
-    const absoluteShareUrl = resultId
-      ? `${window.location.origin}/result?id=${resultId}`
+    const shareUrl = shareId
+      ? `${window.location.origin}/result?id=${shareId}`
       : window.location.href;
 
     try {
@@ -282,20 +279,17 @@ function ResultContent() {
         await navigator.share({
           title: "Wasted Time Calculator Result",
           text: shareText,
-          url: absoluteShareUrl,
+          url: shareUrl,
         });
-        setShareFeedback("Link dibagikan.");
-        window.setTimeout(() => setShareFeedback(""), 2200);
+        pushToast("Link dibagikan.");
         return;
       }
 
-      await navigator.clipboard.writeText(`${shareText} ${absoluteShareUrl}`);
-      setShareFeedback("Link disalin.");
+      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      pushToast("Link disalin.");
     } catch {
-      setShareFeedback("Gagal membagikan hasil.");
+      pushToast("Gagal membagikan hasil.");
     }
-
-    window.setTimeout(() => setShareFeedback(""), 2200);
   }
 
   if (recordIdFromUrl && isLoadingStoredRecord) {
@@ -374,10 +368,6 @@ function ResultContent() {
                 <p className="text-slate-300">Membuat achievement terbaik...</p>
               )}
 
-              {achievementError && (
-                <p className="text-red-300">{achievementError}</p>
-              )}
-
               {renderRecord.achievementTitle && (
                 <>
                   <p className="text-lg font-semibold text-white">
@@ -389,20 +379,21 @@ function ResultContent() {
                 </>
               )}
 
+              <p className="mt-5 text-sm leading-6 text-amber-100/90">
+                Kalau kamu mau lihat hasil ini lagi nanti, bagikan hasil ini
+                sekarang supaya link-nya tersimpan.
+              </p>
+
               <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
                   onClick={handleShareResult}
-                  disabled={!resultId}
+                  disabled={!shareId}
                   className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-200/30 bg-amber-300/10 px-4 py-3 text-sm font-semibold text-amber-50 transition hover:bg-amber-300/20 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <span aria-hidden="true">↗</span>
-                  Share ke Sosial Media
+                  Bagikan Hasil
                 </button>
-
-                <p className="flex items-center text-sm text-slate-400">
-                  {shareFeedback}
-                </p>
               </div>
             </section>
           </section>
@@ -457,6 +448,12 @@ function ResultContent() {
           </aside>
         </div>
       </div>
+
+      {toastMessage && (
+        <div className="fixed bottom-5 right-5 z-50 rounded-2xl border border-white/10 bg-slate-950/95 px-4 py-3 text-sm text-white shadow-2xl shadow-black/40 backdrop-blur-xl">
+          {toastMessage}
+        </div>
+      )}
     </main>
   );
 }
