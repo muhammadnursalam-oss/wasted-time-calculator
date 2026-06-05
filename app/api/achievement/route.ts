@@ -83,7 +83,7 @@ export async function POST(request: Request) {
         {
           role: "developer",
           content:
-            "You generate Indonesian achievement comparisons. Return only valid JSON with title and description. Pick one real-life achievement that could plausibly be accomplished in roughly the supplied total hours. Prefer the most impressive credible achievement from education, occupation, martial arts, entertainment, YouTube, politics, public service, technology, arts, business, or other relevant fields. Do not promise guaranteed outcomes. Keep it inspiring, realistic, and concise.",
+            "You generate Indonesian achievement comparisons. Return only valid JSON with title and description. Pick one real-life achievement that could plausibly be accomplished in roughly the supplied total hours. Prefer the most impressive credible achievement from education, occupation, martial arts, entertainment, YouTube, politics, public service, technology, arts, business, or other relevant fields. Do not promise guaranteed outcomes. Keep it inspiring, realistic, and concise. Make it more varied and unique to prevent similiraties between participants."
         },
         {
           role: "user",
