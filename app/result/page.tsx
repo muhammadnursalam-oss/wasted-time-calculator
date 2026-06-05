@@ -10,6 +10,7 @@ import {
 import {
   createResultRecord,
   getResultRecordById,
+  getResultRecordByFingerprint,
   ResultAttemptLimitError,
   type ResultRecord,
 } from "./utils/results";
@@ -159,6 +160,25 @@ function ResultContent() {
 
       try {
         const fingerprint = await generateBrowserFingerprint();
+
+        const existingRecord = await getResultRecordByFingerprint(fingerprint);
+
+        if (existingRecord) {
+          setStoredRecord(existingRecord);
+          setAchievementResult({
+            title: existingRecord.achievementTitle,
+            description: existingRecord.achievementDescription,
+          });
+          setResultId(existingRecord.id);
+          window.history.replaceState(
+            null,
+            "",
+            `/result?id=${existingRecord.id}`
+          );
+          pushToast("Kamu sudah pernah mencoba tes ini sebelumnya.");
+          return;
+        }
+
         const achievement = await getAchievementResult(totalHours);
 
         if (!isActive) {

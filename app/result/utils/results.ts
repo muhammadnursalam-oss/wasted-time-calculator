@@ -75,3 +75,21 @@ export async function getResultRecordById(
 
   return response.json();
 }
+
+export async function getResultRecordByFingerprint(
+  fingerprint: string
+): Promise<ResultRecord | null> {
+  const response = await fetch(
+    `/api/results?fingerprint=${encodeURIComponent(fingerprint)}`
+  );
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error("Failed to load result record.");
+  }
+
+  return response.json();
+}

@@ -77,12 +77,15 @@ function parseInput(body: unknown): ResultInput | null {
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const id = url.searchParams.get("id");
+  const fingerprint = url.searchParams.get("fingerprint");
 
-  if (!id) {
+  if (!id && !fingerprint) {
     return NextResponse.json({ error: "Missing id." }, { status: 400 });
   }
 
-  const record = await getResultRecordById(id);
+  const record = id
+    ? await getResultRecordById(id)
+    : await getResultRecordByFingerprint(fingerprint || "");
 
   if (!record) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
