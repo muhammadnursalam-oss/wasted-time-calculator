@@ -83,114 +83,212 @@ export async function POST(request: Request) {
         {
           role: "developer",
           content:
-            `Given a total number of hours, generate ONE highly visual real-world achievement that a person could realistically accomplish with the same amount of dedicated effort.
+            `Given a total number of hours, generate ONE alternative-life achievement that someone could realistically reach with the same amount of dedicated effort.
 
-The goal is not to produce a boring milestone.
+The purpose is not to show a skill.
 
-The goal is to create a comparison that makes the reader immediately think:
+The purpose is to show a memorable moment from an alternate version of the person's life.
 
-"Wah, sebanyak itu ya?"
+The result should feel emotional, visual, relatable, and inspiring.
 
-Focus on achievements that are exciting, memorable, and easy to visualize.
+The reader should immediately imagine themselves in that situation and think:
+
+"Wah... sebanyak itu ya."
+
+---
+
+## OUTPUT FORMAT
+
+TITLE: [SHORT, PUNCHY, ALL CAPS]
+
+OPENING: [One short sentence.]
+
+DESCRIPTION: [2–4 sentences telling the story behind the achievement.]
+
+---
+
+## TITLE RULES
+
+The title is the most important part.
+
+The title must describe a specific moment, milestone, event, or scene.
+
+Do NOT describe a skill.
+
+Bad:
+
+* MENJADI PROGRAMMER
+* BELAJAR BAHASA JEPANG
+* MENJADI PETARUNG MMA
+* MEMBUAT BISNIS
+
+Good:
+
+* CO-MAIN EVENT UFC FIGHT NIGHT
+* SIDANG SKRIPSI DENGAN REVISI MINIM
+* VIDEO YOUTUBE KE-500
+* PULL REQUEST DITERIMA GOOGLE
+* GARIS FINIS TOKYO MARATHON
+* PELUNCURAN APLIKASI PERTAMA DI PLAY STORE
+* PANGGUNG TEDX PERTAMA
+* SABUK HITAM BJJ
+* BUKU PERTAMA TERPAJANG DI GRAMEDIA
+* KLIEN LUAR NEGERI PERTAMA
+
+Use:
+
+* Real events
+* Real platforms
+* Real competitions
+* Real companies
+* Real cities
+* Real organizations
+* Real certifications
+* Real public figures
+
+The title should feel like a movie scene, not a résumé bullet point.
+
+---
+
+## OPENING RULES
+
+The opening is always a short hook.
+
+The meaning should always be:
+
+"Imagine if you invested this amount of time into one meaningful goal."
+
+Use natural variations.
 
 Examples:
 
-* Becoming a UFC contender
-* Reaching black belt level in a martial art
-* Publishing a novel
-* Building an indie game
-* Launching a YouTube channel with hundreds of videos
-* Becoming conversational in Japanese
-* Completing multiple marathons
-* Building an AI application from scratch
-* Performing live music on stage
-* Contributing to major open-source projects
-* Creating a profitable online business
+* Bayangkan jika seluruh X jam itu kamu fokuskan ke satu ambisi.
+* Dengan X jam yang sama, kamu bisa menjalani perjalanan yang sangat berbeda.
+* Jika semua X jam itu dihabiskan untuk satu tujuan, hasilnya bisa mengejutkan.
+* Sebanyak itulah waktu yang dibutuhkan untuk mengubah hobi menjadi pencapaian nyata.
+* Bagaimana jika seluruh X jam itu kamu investasikan ke satu mimpi?
+* Dalam rentang X jam yang sama, banyak orang membangun sesuatu yang mengubah hidup mereka.
+* X jam mungkin terdengar biasa. Sampai kamu melihat apa yang bisa lahir darinya.
 
-## Core Principle
+Keep it under 20 words.
 
-The achievement must be:
+---
 
-* Plausible
-* Proportional to the supplied hours
-* Inspiring
-* Concrete
-* Easy to imagine
+## DESCRIPTION RULES
 
-Avoid generic outcomes such as:
+Do not explain the skill.
 
-* "Learn programming"
-* "Improve English"
-* "Get better at drawing"
+Tell the story.
 
-Instead prefer:
+The description should feel like a snapshot from an alternate life.
 
-* "Meluncurkan aplikasi AI milik sendiri"
-* "Menerbitkan novel pertamamu"
-* "Menjadi penantang UFC"
-* "Menyelesaikan maraton penuh"
-* "Membangun channel YouTube dengan ratusan video"
+The reader should be able to picture the scene.
 
-## Style
+Use sensory and emotional details when appropriate.
 
-* Write in Indonesian.
+Include:
 
-* Be confident and direct.
+* The starting point
+* The struggle
+* The progress
+* The memorable moment
 
-* Sound energetic and exciting.
+The description should feel personal.
 
-* Avoid uncertainty words such as:
+Instead of:
 
-  * mungkin
-  * bisa jadi
-  * berpotensi
-  * kemungkinan
+"Anda dapat belajar MMA dan meningkatkan kemampuan bertarung."
 
-* Do not lecture or shame the user.
+Write:
 
-* Make the achievement sound like an epic alternative timeline.
+"Ribuan ronde sparring, latihan fisik yang melelahkan, dan pertandingan kecil yang nyaris tak ada penonton perlahan membentuk reputasimu. Bertahun-tahun kemudian, saat lampu arena menyala dan namamu dipanggil menuju oktagon untuk menghadapi petarung elite seperti Khamzat Chimaev, semua jam latihan itu akhirnya terasa nyata."
 
-* Prefer vivid imagery over formal explanations.
+Instead of:
 
-## Scaling
+"Anda dapat membangun channel YouTube."
 
-Match the scale of the achievement to the supplied hours.
+Write:
 
-Small hours:
+"Awalnya videomu hanya ditonton belasan orang. Namun setelah ratusan jam menulis naskah, mengedit, dan mengunggah tanpa henti, kamu akhirnya menekan tombol publish untuk video ke-500. Arsip karya yang dulu hanya mimpi kini memenuhi satu channel yang benar-benar milikmu."
 
-* meaningful projects
-* beginner accomplishments
+---
 
-Medium hours:
+## SCALING RULES
 
-* advanced skills
-* major personal projects
+Match the achievement to the supplied hours.
 
-Large hours:
+50–200 hours:
+Small but memorable moments.
 
-* elite performance
-* mastery
-* remarkable bodies of work
+Examples:
 
-## Output Format
+* Lari 10K Pertama
+* Video YouTube ke-10
+* Turnamen Catur Pertama
 
-TITLE: [SHORT, ALL CAPS TITLE]
+200–1,000 hours:
+Major personal milestones.
 
-OPENING: [A short impactful sentence]
+Examples:
 
-DESCRIPTION: [2-3 sentences explaining what someone could accomplish with that amount of effort.]
+* Half Marathon
+* Aplikasi Pertama
+* Percakapan Lancar dengan Turis Jepang
+* Sertifikasi Profesional
 
-## Example Tone
+1,000–5,000 hours:
+Significant achievements.
 
-TITLE:
-PENANTANG UFC MELAWAN KHAMZAT CHIMAEV
+Examples:
 
-OPENING:
-Bayangkan semua waktu itu kamu gunakan untuk mengejar satu ambisi.
+* Video YouTube ke-100
+* Klien Internasional Pertama
+* Sabuk Biru BJJ
+* Sidang Skripsi
 
-DESCRIPTION:
-Dengan jumlah waktu sebesar ini, kamu bisa menghabiskan ribuan sesi latihan di gym, mengasah striking dan grappling, lalu merangkak naik di ranking profesional. Pada titik ini, kamu bukan lagi petarung amatir—kamu sedang berjalan menuju pertarungan melawan monster kelas dunia seperti Khamzat Chimaev.
-`
+5,000–15,000 hours:
+Elite accomplishments.
+
+Examples:
+
+* Sabuk Hitam BJJ
+* Co-Main Event UFC Fight Night
+* Buku Pertama di Gramedia
+* Channel YouTube dengan Ratusan Video
+
+15,000+ hours:
+Life-defining moments.
+
+Examples:
+
+* Gelar Doktor
+* Pembicara TEDx
+* Ironman Finisher
+* Startup dengan Tim Sendiri
+* Karya yang Menjadi Referensi Banyak Orang
+
+---
+
+## TONE
+
+* Casual
+* Human
+* Emotional
+* Inspirational
+* Cinematic
+* Specific
+* Visual
+
+Avoid:
+
+* Corporate language
+* Formal language
+* Generic achievements
+* Empty motivation
+* Guilt-tripping
+* Uncertainty words (mungkin, barangkali, bisa jadi, kemungkinan)
+
+Every output should feel like a scene from an alternate version of the user's life.`
         },
         {
           role: "user",
