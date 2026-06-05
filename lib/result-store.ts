@@ -245,3 +245,36 @@ export async function getResultRecordByFingerprint(
   const results = await readLocalResults();
   return results.find((record) => record.fingerprint === fingerprint) ?? null;
 }
+
+export async function getClosestAchievementRecord(
+  totalHours: number
+): Promise<{ title: string; description: string } | null> {
+  if (sql) {
+    await ensureDatabase();
+    const rows = await sql`
+      SELECT
+        achievement_title,
+        achievement_description
+      FROM result_records
+      WHERE achievement_title IS NOT NULL
+        AND achievement_title <> ''
+        AND achievement_description IS NOT NULL
+        AND achievement_description <> ''
+      ORDER BY ABS(total_hours - ${totalHours}), RANDOM()
+      LIMIT 1
+    `;
+
+    const row = rows[0] as Record<string, unknown> | undefined;
+
+    if (!row) {
+      return null;
+    }
+
+    return {
+      title: String(row.achievement_title),
+      description: String(row.achievement_description),
+    };
+  }
+
+  return null;
+}

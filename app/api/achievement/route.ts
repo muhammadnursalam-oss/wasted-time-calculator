@@ -1,15 +1,9 @@
 import { NextResponse } from "next/server";
-import { mkdir, readFile, writeFile } from "fs/promises";
-import path from "path";
+import { getClosestAchievementRecord } from "@/lib/result-store";
 
 type AchievementResult = {
   title: string;
   description: string;
-};
-
-type StoredAchievementResult = AchievementResult & {
-  totalHours: number;
-  createdAt: string;
 };
 
 type OpenAIResponse = {
@@ -20,12 +14,6 @@ type OpenAIResponse = {
     }>;
   }>;
 };
-
-const RESULTS_FILE = path.join(
-  process.cwd(),
-  "data",
-  "achievement-results.json"
-);
 
 const fallbackAchievement: AchievementResult = {
   title: "Ribuan Jam Bisa Menjadi Karya Nyata",
@@ -64,69 +52,9 @@ function getOutputText(data: OpenAIResponse): string {
   );
 }
 
-async function readStoredResults(): Promise<StoredAchievementResult[]> {
-  try {
-    const rawFile = await readFile(RESULTS_FILE, "utf8");
-    const parsed = JSON.parse(rawFile) as unknown;
-
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
-    return parsed.filter((item): item is StoredAchievementResult => {
-      return (
-        typeof item === "object" &&
-        item !== null &&
-        typeof (item as StoredAchievementResult).title === "string" &&
-        typeof (item as StoredAchievementResult).description === "string" &&
-        typeof (item as StoredAchievementResult).totalHours === "number" &&
-        Number.isFinite((item as StoredAchievementResult).totalHours)
-      );
-    });
-  } catch {
-    return [];
-  }
-}
-
-async function saveStoredResult(result: StoredAchievementResult) {
-  await mkdir(path.dirname(RESULTS_FILE), { recursive: true });
-  const existingResults = await readStoredResults();
-  existingResults.push(result);
-  await writeFile(RESULTS_FILE, JSON.stringify(existingResults, null, 2), "utf8");
-}
-
-function pickClosestStoredResult(
-  totalHours: number,
-  results: StoredAchievementResult[]
-): AchievementResult {
-  if (results.length === 0) {
-    return fallbackAchievement;
-  }
-
-  let closestDistance = Number.POSITIVE_INFINITY;
-  let closestResults: StoredAchievementResult[] = [];
-
-  for (const result of results) {
-    const distance = Math.abs(result.totalHours - totalHours);
-
-    if (distance < closestDistance) {
-      closestDistance = distance;
-      closestResults = [result];
-      continue;
-    }
-
-    if (distance === closestDistance) {
-      closestResults.push(result);
-    }
-  }
-
-  const pickedResult =
-    closestResults[Math.floor(Math.random() * closestResults.length)];
-
-  return {
-    title: pickedResult.title,
-    description: pickedResult.description,
-  };
+async function getFallbackAchievement(totalHours: number) {
+  const record = await getClosestAchievementRecord(totalHours);
+  return record ?? fallbackAchievement;
 }
 
 export async function POST(request: Request) {
@@ -140,8 +68,7 @@ export async function POST(request: Request) {
   }
 
   if (!process.env.OPENAI_API_KEY) {
-    const storedResults = await readStoredResults();
-    return NextResponse.json(pickClosestStoredResult(totalHours, storedResults));
+    return NextResponse.json(await getFallbackAchievement(totalHours));
   }
 
   const response = await fetch("https://api.openai.com/v1/responses", {
@@ -192,22 +119,13 @@ export async function POST(request: Request) {
   });
 
   if (!response.ok) {
-    const storedResults = await readStoredResults();
-    return NextResponse.json(pickClosestStoredResult(totalHours, storedResults));
+    return NextResponse.json(await getFallbackAchievement(totalHours));
   }
 
   try {
     const data = (await response.json()) as OpenAIResponse;
-    const achievementResult = parseAchievementResult(getOutputText(data));
-    await saveStoredResult({
-      ...achievementResult,
-      totalHours,
-      createdAt: new Date().toISOString(),
-    });
-
-    return NextResponse.json(achievementResult);
+    return NextResponse.json(parseAchievementResult(getOutputText(data)));
   } catch {
-    const storedResults = await readStoredResults();
-    return NextResponse.json(pickClosestStoredResult(totalHours, storedResults));
+    return NextResponse.json(await getFallbackAchievement(totalHours));
   }
 }
