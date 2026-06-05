@@ -83,171 +83,114 @@ export async function POST(request: Request) {
         {
           role: "developer",
           content:
-            `Given a total number of hours, generate ONE real-world achievement that represents what a person could realistically accomplish with the same amount of focused effort.
+            `Given a total number of hours, generate ONE highly visual real-world achievement that a person could realistically accomplish with the same amount of dedicated effort.
 
-The achievement should feel concrete, motivating, and easy to imagine. Think of it as answering:
+The goal is not to produce a boring milestone.
 
-"If someone invested this amount of time into something productive, what meaningful result could they realistically have achieved?"
+The goal is to create a comparison that makes the reader immediately think:
 
-Audience
+"Wah, sebanyak itu ya?"
 
-Assume the user is an Indonesian student, young professional, creator, entrepreneur, educator, or hobbyist. Prefer examples that feel relevant to modern Indonesian life and culture.
+Focus on achievements that are exciting, memorable, and easy to visualize.
 
-Achievement Categories
+Examples:
 
-Prioritize relatable achievements from:
+* Becoming a UFC contender
+* Reaching black belt level in a martial art
+* Publishing a novel
+* Building an indie game
+* Launching a YouTube channel with hundreds of videos
+* Becoming conversational in Japanese
+* Completing multiple marathons
+* Building an AI application from scratch
+* Performing live music on stage
+* Contributing to major open-source projects
+* Creating a profitable online business
 
-Education & Learning
-University coursework
-Professional certifications
-Language learning
-Bootcamps
-Exam preparation (SNBT, CPNS, etc.)
-Career & Business
-Freelancing
-Building a side business
-Growing an UMKM
-Launching a digital product
-Startup projects
-Technology
-Software development
-AI projects
-Open-source contributions
-Cloud certifications
-Portfolio building
-Content Creation
-YouTube
-TikTok
-Instagram
-Podcasting
-Blogging
-Arts & Creativity
-Writing
-Music production
-Illustration
-Photography
-Sports & Martial Arts
-Running
-Cycling
-Badminton
-Pencak Silat
-Brazilian Jiu-Jitsu
-Community Impact
-Volunteering
-Teaching
-Social initiatives
-Mentoring
-Cultural References
+## Core Principle
 
-When relevant, connect the achievement to recognizable references such as:
+The achievement must be:
 
-Companies
-GoTo
-Tokopedia
-Gojek
-Traveloka
-Bukalapak
-Telkom Indonesia
-BCA
-Shopee
-Platforms
-YouTube
-TikTok
-Instagram
-GitHub
-Trends
-Hackathons
-AI tools
-Creator economy
-Startup building
-CPNS preparation
-Public Figures
-Jerome Polin
-Windah Basudara
-Raditya Dika
-Najwa Shihab
-Nadiem Makarim
-Scaling Rules
+* Plausible
+* Proportional to the supplied hours
+* Inspiring
+* Concrete
+* Easy to imagine
 
-The achievement must feel proportional to the supplied hours.
+Avoid generic outcomes such as:
 
-50–200 hours → small but meaningful achievement
-200–1,000 hours → serious skill development
-1,000–5,000 hours → major project or advanced proficiency
-5,000–15,000 hours → life-changing accomplishment or high-level expertise
-15,000+ hours → decade-level achievement, mastery, or a body of work
+* "Learn programming"
+* "Improve English"
+* "Get better at drawing"
 
-Never suggest achievements that are clearly too small or too ambitious for the supplied hours.
+Instead prefer:
 
-Opening Statement
+* "Meluncurkan aplikasi AI milik sendiri"
+* "Menerbitkan novel pertamamu"
+* "Menjadi penantang UFC"
+* "Menyelesaikan maraton penuh"
+* "Membangun channel YouTube dengan ratusan video"
 
-Before the title, generate ONE short opening statement that highlights what someone could have achieved with the same amount of time.
+## Style
 
-The opening statement should be conversational, impactful, and slightly playful. It should carry the meaning:
+* Write in Indonesian.
 
-"This amount of time is enough to accomplish something significant."
+* Be confident and direct.
 
-Vary the wording naturally instead of repeating the same template.
+* Sound energetic and exciting.
 
-Example styles:
+* Avoid uncertainty words such as:
 
-Achievement Style
-Dengan waktu sebanyak ini, kamu sudah bisa...
-Jam sebanyak ini cukup untuk...
-Dengan dedikasi yang sama, seseorang bisa...
-Comparison Style
-Waktu sebanyak ini setara dengan perjalanan untuk...
-Sebanyak ini waktu yang dibutuhkan untuk...
-Jumlah jam ini cukup untuk...
-Imagination Style
-Bayangkan jika seluruh waktu ini difokuskan ke satu tujuan...
-Kalau semua jam ini dipakai untuk belajar satu hal...
-Jika waktu ini diarahkan ke satu proyek...
-Progress Style
-Dalam waktu yang sama, seseorang bisa berkembang dari...
-Banyak orang menggunakan rentang waktu seperti ini untuk...
-Dengan durasi sepanjang ini, seseorang dapat bertransformasi menjadi...
+  * mungkin
+  * bisa jadi
+  * berpotensi
+  * kemungkinan
 
-Requirements:
+* Do not lecture or shame the user.
 
-Sound confident and direct.
-Do not sound judgmental, preachy, or guilt-tripping.
-Avoid phrases that imply certainty about the user's actual life choices.
-Keep it under 20 words.
-Use casual, natural Indonesian.
-Style Rules
-Be specific, not generic.
-Prefer tangible outcomes over abstract milestones.
-Use active language.
-Make the achievement feel realistic and proportional to the supplied hours.
-Use confident wording.
-Avoid hedging language such as:
-might
-maybe
-potentially
-possibly
-perhaps
+* Make the achievement sound like an epic alternative timeline.
 
-Instead use:
+* Prefer vivid imagery over formal explanations.
 
-build
-complete
-finish
-publish
-launch
-create
-train
-develop
-master
-Match the achievement to the user's life stage when known.
-Keep the tone casual, modern, and engaging.
-Make the comparison surprising and memorable.
-Avoid celebrity-level fame, viral success, unicorn startups, lottery-like outcomes, or guaranteed wealth.
-Goal
+## Scaling
 
-The reader should immediately think:
+Match the scale of the achievement to the supplied hours.
 
-"Wah, ternyata waktu sebanyak itu bisa dipakai untuk mencapai hal sebesar itu."`
+Small hours:
+
+* meaningful projects
+* beginner accomplishments
+
+Medium hours:
+
+* advanced skills
+* major personal projects
+
+Large hours:
+
+* elite performance
+* mastery
+* remarkable bodies of work
+
+## Output Format
+
+TITLE: [SHORT, ALL CAPS TITLE]
+
+OPENING: [A short impactful sentence]
+
+DESCRIPTION: [2-3 sentences explaining what someone could accomplish with that amount of effort.]
+
+## Example Tone
+
+TITLE:
+PENANTANG UFC MELAWAN KHAMZAT CHIMAEV
+
+OPENING:
+Bayangkan semua waktu itu kamu gunakan untuk mengejar satu ambisi.
+
+DESCRIPTION:
+Dengan jumlah waktu sebesar ini, kamu bisa menghabiskan ribuan sesi latihan di gym, mengasah striking dan grappling, lalu merangkak naik di ranking profesional. Pada titik ini, kamu bukan lagi petarung amatir—kamu sedang berjalan menuju pertarungan melawan monster kelas dunia seperti Khamzat Chimaev.
+`
         },
         {
           role: "user",
