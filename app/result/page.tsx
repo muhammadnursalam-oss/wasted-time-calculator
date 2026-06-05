@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getTimeRank } from "./utils/rank";
 import {
   AchievementResult,
@@ -36,6 +36,7 @@ export default function ResultPage() {
 }
 
 function ResultContent() {
+  const router = useRouter();
   const params = useSearchParams();
   const recordIdFromUrl = params.get("id") || "";
 
@@ -394,6 +395,16 @@ function ResultContent() {
                   <span aria-hidden="true">↗</span>
                   Bagikan Hasil
                 </button>
+
+                {recordIdFromUrl && (
+                  <button
+                    type="button"
+                    onClick={() => router.push("/")}
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                  >
+                    Coba Tes Ini
+                  </button>
+                )}
               </div>
             </section>
           </section>
