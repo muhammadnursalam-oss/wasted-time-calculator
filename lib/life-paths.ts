@@ -23,7 +23,8 @@ export const LIFE_PATHS: LifePath[] = [
     id: "inspirator",
     emoji: "🌟",
     label: "Inspirator",
-    description: "jalan buat kamu yang mau aktif mengubah hidup orang lain",
+    description:
+      "Jalan buat kamu yang ingin membantu, mengajar, dan memberi dampak positif buat banyak orang.",
     promptFocus:
       "teaching, mentoring, volunteering, public speaking, community work, or social impact",
     promptAvoid: "business bragging, sports medals, or pure entertainment",
@@ -32,7 +33,8 @@ export const LIFE_PATHS: LifePath[] = [
     id: "kreator",
     emoji: "🎭",
     label: "Kreator",
-    description: "jalan buat kamu yang senang menghibur dan mengekspresikan dirimu",
+    description:
+      "Jalan buat kamu yang suka menghibur, tampil, dan mengekspresikan dirimu lewat berbagai media.",
     promptFocus:
       "content creation, writing, video, performance, streaming, publishing, or creative projects",
     promptAvoid: "corporate careers, academic degrees, or generic skill talk",
@@ -41,7 +43,8 @@ export const LIFE_PATHS: LifePath[] = [
     id: "pembangun",
     emoji: "⚡",
     label: "Pembangun",
-    description: "jalan buat kamu yang siap membuat apapun",
+    description:
+      "Jalan buat kamu yang senang menciptakan sesuatu, mulai dari aplikasi, produk, hingga proyek besar.",
     promptFocus:
       "building products, software, systems, startups, tools, or infrastructure",
     promptAvoid: "art-only, competition-only, or vague motivational scenes",
@@ -50,7 +53,8 @@ export const LIFE_PATHS: LifePath[] = [
     id: "juara",
     emoji: "🏆",
     label: "Juara",
-    description: "jalan buat kamu yang gak bisa berhenti buat kompetitif",
+    description:
+      "Jalan buat kamu yang selalu tertantang untuk berkembang, berlatih, dan memenangkan kompetisi.",
     promptFocus:
       "competition, rankings, trophies, records, medals, brackets, or championship scenes",
     promptAvoid: "business exits, art shows, or teaching-focused milestones",
@@ -59,7 +63,8 @@ export const LIFE_PATHS: LifePath[] = [
     id: "seniman",
     emoji: "🎨",
     label: "Seniman",
-    description: "jalan buat kamu yang seneng banget menghasilkan karya seni",
+    description:
+      "Jalan buat kamu yang senang menuangkan ide dan perasaan menjadi karya yang bisa dinikmati orang lain.",
     promptFocus:
       "artmaking, exhibitions, albums, stage work, galleries, design, illustration, or craft",
     promptAvoid: "startup language, trophies, or academic validation",
@@ -68,7 +73,8 @@ export const LIFE_PATHS: LifePath[] = [
     id: "penemu",
     emoji: "🔬",
     label: "Penemu",
-    description: "jalan buat kamu yang seneng banget belajar nemuin hal-hal baru",
+    description:
+      "Jalan buat kamu yang penasaran dengan banyak hal dan selalu ingin menemukan sesuatu yang baru.",
     promptFocus:
       "research, experiments, labs, scientific discovery, patents, certifications, or language mastery",
     promptAvoid: "pure entertainment, sports podiums, or business hype",
@@ -77,7 +83,8 @@ export const LIFE_PATHS: LifePath[] = [
     id: "pengusaha",
     emoji: "💼",
     label: "Pengusaha",
-    description: "jalan buat kamu yang gila bisnis, semua dijadiin cuan",
+    description:
+      "Jalan buat kamu yang jeli melihat peluang dan punya mimpi membangun sesuatu yang bernilai.",
     promptFocus:
       "business growth, customers, revenue, deals, funding, launches, acquisitions, or expansion",
     promptAvoid: "personal fame, art-only arcs, or competition trophies",

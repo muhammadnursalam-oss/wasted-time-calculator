@@ -9,6 +9,79 @@ const outputFile = path.join(
 
 const totalHoursCases = [50, 125, 250, 750, 1250, 3000, 5000, 9000, 15000, 24000];
 
+const lifePaths = [
+  {
+    id: "inspirator",
+    emoji: "🌟",
+    label: "Inspirator",
+    description:
+      "Jalan buat kamu yang ingin membantu, mengajar, dan memberi dampak positif buat banyak orang.",
+    promptFocus:
+      "teaching, mentoring, volunteering, public speaking, community work, or social impact",
+    promptAvoid: "business bragging, sports medals, or pure entertainment",
+  },
+  {
+    id: "kreator",
+    emoji: "🎭",
+    label: "Kreator",
+    description:
+      "Jalan buat kamu yang suka menghibur, tampil, dan mengekspresikan dirimu lewat berbagai media.",
+    promptFocus:
+      "content creation, writing, video, performance, streaming, publishing, or creative projects",
+    promptAvoid: "corporate careers, academic degrees, or generic skill talk",
+  },
+  {
+    id: "pembangun",
+    emoji: "⚡",
+    label: "Pembangun",
+    description:
+      "Jalan buat kamu yang senang menciptakan sesuatu, mulai dari aplikasi, produk, hingga proyek besar.",
+    promptFocus:
+      "building products, software, systems, startups, tools, or infrastructure",
+    promptAvoid: "art-only, competition-only, or vague motivational scenes",
+  },
+  {
+    id: "juara",
+    emoji: "🏆",
+    label: "Juara",
+    description:
+      "Jalan buat kamu yang selalu tertantang untuk berkembang, berlatih, dan memenangkan kompetisi.",
+    promptFocus:
+      "competition, rankings, trophies, records, medals, brackets, or championship scenes",
+    promptAvoid: "business exits, art shows, or teaching-focused milestones",
+  },
+  {
+    id: "seniman",
+    emoji: "🎨",
+    label: "Seniman",
+    description:
+      "Jalan buat kamu yang senang menuangkan ide dan perasaan menjadi karya yang bisa dinikmati orang lain.",
+    promptFocus:
+      "artmaking, exhibitions, albums, stage work, galleries, design, illustration, or craft",
+    promptAvoid: "startup language, trophies, or academic validation",
+  },
+  {
+    id: "penemu",
+    emoji: "🔬",
+    label: "Penemu",
+    description:
+      "Jalan buat kamu yang penasaran dengan banyak hal dan selalu ingin menemukan sesuatu yang baru.",
+    promptFocus:
+      "research, experiments, labs, scientific discovery, patents, certifications, or language mastery",
+    promptAvoid: "pure entertainment, sports podiums, or business hype",
+  },
+  {
+    id: "pengusaha",
+    emoji: "💼",
+    label: "Pengusaha",
+    description:
+      "Jalan buat kamu yang jeli melihat peluang dan punya mimpi membangun sesuatu yang bernilai.",
+    promptFocus:
+      "business growth, customers, revenue, deals, funding, launches, acquisitions, or expansion",
+    promptAvoid: "personal fame, art-only arcs, or competition trophies",
+  },
+];
+
 async function loadDotEnv() {
   try {
     const envFile = await readFile(path.join(process.cwd(), ".env"), "utf8");
@@ -58,20 +131,50 @@ function parseAchievementResult(text) {
   };
 }
 
-function buildRequestBody(totalHours, usedTitles) {
+function normalizeLifePath(lifePath) {
+  return lifePaths.find((item) => item.id === lifePath)?.id ?? "pembangun";
+}
+
+function getLifePathMeta(lifePath) {
+  return (
+    lifePaths.find((item) => item.id === normalizeLifePath(lifePath)) ??
+    lifePaths[2]
+  );
+}
+
+function buildRequestBody(totalHours, lifePath, usedTitles) {
+  const path = getLifePathMeta(lifePath);
+  const hours = Math.round(totalHours).toLocaleString("en-US");
   const avoidTitleLine =
     usedTitles.length > 0
       ? `Avoid repeating these earlier test titles: ${usedTitles.join(", ")}.`
       : "This is the first test case, so choose a strong baseline achievement.";
 
-  return {
-    model: process.env.OPENAI_MODEL ?? "gpt-5.4-mini",
-    input: [
-      {
-        role: "developer",
-        content: `Given a total number of hours, generate ONE alternative-life achievement that someone could realistically reach with the same amount of dedicated effort.
+  const developer = `Given a total number of hours and a selected life path, generate ONE alternative-life achievement that someone could realistically reach with the same amount of dedicated effort.
 
-The goal is not to describe a skill.
+The selected life path is a strict baseline. Treat it as the main lens for the comparison, not as a loose hint.
+
+The achievement must stay tightly aligned with this path:
+
+PATH: ${path.label}
+MEANING: ${path.description}
+FOCUS: ${path.promptFocus}
+AVOID: ${path.promptAvoid}
+
+Rules:
+
+* If the selected path is Inspirator, the achievement must center on changing other people's lives through teaching, mentoring, speaking, community work, or volunteering.
+* If the selected path is Kreator, the achievement must center on making, publishing, performing, or shipping creative work that people consume.
+* If the selected path is Pembangun, the achievement must center on building products, software, systems, tools, or a startup.
+* If the selected path is Juara, the achievement must center on competition, rankings, medals, records, or championship scenes.
+* If the selected path is Seniman, the achievement must center on creating, exhibiting, or releasing art.
+* If the selected path is Penemu, the achievement must center on research, experiments, discovery, patents, or learning breakthroughs.
+* If the selected path is Pengusaha, the achievement must center on business growth, customers, revenue, launches, funding, or acquisition.
+
+Do not drift into a different path category.
+Do not explain the path choice.
+Do not make the answer generic.
+Do not return a skill description.
 
 The goal is to show a vivid moment from an alternate version of the person's life.
 
@@ -91,7 +194,7 @@ TITLE: [SHORT, PUNCHY, ALL CAPS]
 
 OPENING: [One short emotional hook mentioning the supplied hours]
 
-DESCRIPTION: [2–4 sentences telling the story behind the achievement]
+DESCRIPTION: [2-4 sentences telling the story behind the achievement]
 
 ---
 
@@ -304,7 +407,7 @@ Strongly prefer a different category than the previous example.
 
 # SCALING RULES
 
-50–200 HOURS
+50-200 HOURS
 
 Small but memorable moments.
 
@@ -315,7 +418,7 @@ Examples:
 * Turnamen Catur Pertama
 * Presentasi Seminar Kampus
 
-200–1.000 HOURS
+200-1.000 HOURS
 
 Major personal milestones.
 
@@ -326,7 +429,7 @@ Examples:
 * Sertifikasi AWS Cloud Practitioner
 * JLPT N4
 
-1.000–5.000 HOURS
+1.000-5.000 HOURS
 
 Significant accomplishments.
 
@@ -338,7 +441,7 @@ Examples:
 * Sabuk Biru BJJ
 * Game Pertama di Steam
 
-5.000–15.000 HOURS
+5.000-15.000 HOURS
 
 Elite-level achievements.
 
@@ -383,14 +486,20 @@ Avoid:
 * Empty inspiration
 * Repetitive examples
 
-Every output should feel like a scene from an alternate version of the user's life, anchored to a real place, real event, real platform, real organization, or real historical milestone.
-`,
+Every output should feel like a scene from an alternate version of the user's life, anchored to a real place, real event, real platform, real organization, or real historical milestone.`;
+
+  const user = `Total available practice/work time: ${hours} hours. Generate the single most wow real-life achievement comparison for this amount of time. Make the years / hours stated in the result similar to the total hours in the input. Keep the answer aligned with the selected path: ${path.label}.`;
+
+  return {
+    model: process.env.OPENAI_MODEL ?? "gpt-5.4-mini",
+    input: [
+      {
+        role: "developer",
+        content: developer,
       },
       {
         role: "user",
-        content: `Total available practice/work time: ${Math.round(
-          totalHours
-        ).toLocaleString("en-US")} hours. Generate the single most wow real-life achievement comparison for this amount of time. ${avoidTitleLine}`,
+        content: `${user} ${avoidTitleLine}`,
       },
     ],
     text: {
@@ -419,14 +528,14 @@ Every output should feel like a scene from an alternate version of the user's li
   };
 }
 
-async function generateAchievement(totalHours, usedTitles) {
+async function generateAchievement(totalHours, lifePath, usedTitles) {
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(buildRequestBody(totalHours, usedTitles)),
+    body: JSON.stringify(buildRequestBody(totalHours, lifePath, usedTitles)),
   });
 
   const responseText = await response.text();
@@ -461,28 +570,41 @@ async function main() {
   const usedTitles = [];
 
   for (const totalHours of totalHoursCases) {
-    const startedCaseAt = new Date().toISOString();
+    for (const lifePath of lifePaths) {
+      const startedCaseAt = new Date().toISOString();
 
-    try {
-      const achievement = await generateAchievement(totalHours, usedTitles);
-      usedTitles.push(achievement.title);
-      results.push({
-        totalHours,
-        ok: true,
-        startedAt: startedCaseAt,
-        completedAt: new Date().toISOString(),
-        ...achievement,
-      });
-      console.log(`[ok] ${totalHours} hours -> ${achievement.title}`);
-    } catch (error) {
-      results.push({
-        totalHours,
-        ok: false,
-        startedAt: startedCaseAt,
-        completedAt: new Date().toISOString(),
-        error: error instanceof Error ? error.message : String(error),
-      });
-      console.error(`[fail] ${totalHours} hours`);
+      try {
+        const achievement = await generateAchievement(
+          totalHours,
+          lifePath.id,
+          usedTitles
+        );
+
+        usedTitles.push(achievement.title);
+        results.push({
+          totalHours,
+          lifePath: lifePath.id,
+          lifePathLabel: lifePath.label,
+          ok: true,
+          startedAt: startedCaseAt,
+          completedAt: new Date().toISOString(),
+          ...achievement,
+        });
+        console.log(
+          `[ok] ${totalHours} hours / ${lifePath.label} -> ${achievement.title}`
+        );
+      } catch (error) {
+        results.push({
+          totalHours,
+          lifePath: lifePath.id,
+          lifePathLabel: lifePath.label,
+          ok: false,
+          startedAt: startedCaseAt,
+          completedAt: new Date().toISOString(),
+          error: error instanceof Error ? error.message : String(error),
+        });
+        console.error(`[fail] ${totalHours} hours / ${lifePath.label}`);
+      }
     }
   }
 
@@ -491,6 +613,13 @@ async function main() {
     startedAt,
     model: process.env.OPENAI_MODEL ?? "gpt-5.5",
     outputFile,
+    totalHoursCases,
+    lifePaths: lifePaths.map((item) => ({
+      id: item.id,
+      label: item.label,
+      emoji: item.emoji,
+      description: item.description,
+    })),
     results,
   };
 

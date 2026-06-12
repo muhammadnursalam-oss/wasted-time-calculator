@@ -115,9 +115,10 @@ export default function Home() {
                   <h2 className="text-xl font-semibold text-white">
                     Jalan Hidupmu
                   </h2>
-                  <p className="mt-1 text-sm leading-6 text-slate-400">
-                    Pilih satu arah. AI akan pakai ini sebagai baseline utama
-                    untuk membandingkan jam hidupmu.
+                  <p className="mt-2 max-w-xl text-sm leading-7 text-slate-300">
+                    Pilih satu arah yang paling terasa kamu banget. Deskripsi
+                    tiap jalan dibuat jelas supaya baseline yang kamu pilih
+                    langsung kebaca oleh AI.
                   </p>
                 </div>
                 <span
@@ -150,7 +151,7 @@ export default function Home() {
                         <span className="text-4xl leading-none" aria-hidden="true">
                           {option.emoji}
                         </span>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
                             <p className="text-lg font-semibold text-white">
                               {option.label}
@@ -161,7 +162,7 @@ export default function Home() {
                               </span>
                             )}
                           </div>
-                          <p className="mt-2 text-sm leading-7 text-slate-400">
+                          <p className="mt-2 text-[15px] leading-7 text-slate-200">
                             {option.description}
                           </p>
                         </div>
@@ -182,15 +183,18 @@ export default function Home() {
                 <div className="mt-5 rounded-[28px] border border-amber-200/20 bg-amber-300/10 p-4 sm:p-5">
                   <div className="flex items-start gap-4">
                     <span className="text-4xl">{selectedLifePath.emoji}</span>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-sm uppercase tracking-[0.25em] text-amber-100/80">
                         baseline terpilih
                       </p>
                       <p className="mt-1 text-xl font-semibold text-white">
                         {selectedLifePath.label}
                       </p>
-                      <p className="mt-2 text-sm leading-7 text-slate-200">
+                      <p className="mt-2 text-sm leading-7 text-slate-100">
                         {selectedLifePath.description}
+                      </p>
+                      <p className="mt-3 inline-flex rounded-full border border-amber-100/20 bg-black/20 px-3 py-1 text-xs uppercase tracking-[0.22em] text-amber-50">
+                        Ini yang akan dipakai AI sebagai referensi utama
                       </p>
                     </div>
                   </div>
