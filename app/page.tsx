@@ -32,6 +32,12 @@ export default function Home() {
     Number(browsing) +
     Number(daydreaming);
   const isDailyTotalInvalid = dailyTotal === 0 || dailyTotal > 24;
+  const formProgress =
+    (Number(!isNameMissing) +
+      Number(age !== "" && !isAgeInvalid) +
+      Number(!isLifePathMissing) +
+      Number(!isDailyTotalInvalid)) *
+    25;
   const hasFormError =
     isNameMissing || isAgeInvalid || isDailyTotalInvalid || isLifePathMissing;
 
@@ -41,17 +47,17 @@ export default function Home() {
     }
 
     if (userAge < 10 || userAge > 120) {
-      alert("masukan usia antara 10-120");
+      alert("Masukkan usia antara 10-120.");
       return;
     }
 
     if (isLifePathMissing) {
-      alert("pilih Jalan Hidupmu dulu");
+      alert("Pilih jalan hidup dulu.");
       return;
     }
 
     if (isDailyTotalInvalid) {
-      alert("total aktivitas tidak melebihi 24 jam per hari");
+      alert("Total aktivitas tidak boleh lebih dari 24 jam per hari.");
       return;
     }
 
@@ -71,54 +77,91 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen overflow-hidden text-white">
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(10,15,25,0.92),rgba(15,23,42,0.82)_55%,rgba(30,41,59,0.94))]" />
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(8,12,22,0.94),rgba(15,23,42,0.86)_56%,rgba(30,41,59,0.98))]" />
       <div
-        className="absolute inset-0 opacity-30"
+        className="absolute inset-0 opacity-25"
         style={{
           backgroundImage:
             "linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)",
           backgroundSize: "64px 64px",
         }}
       />
-      <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-amber-300/20 to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-amber-300/20 to-transparent" />
+      <div className="absolute left-1/2 top-20 h-72 w-72 -translate-x-1/2 rounded-full bg-amber-300/10 blur-3xl glow-pulse" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-center px-6 py-12">
-        <div className="grid gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
-          <section className="space-y-8">
-            <div className="max-w-2xl">
-              <p className="mb-4 text-sm uppercase tracking-[0.35em] text-amber-200/80">
-                wasted time calculator
-              </p>
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col justify-center px-4 py-5 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+        <div className="grid gap-6 xl:grid-cols-[1.03fr_0.97fr] xl:items-start xl:gap-8">
+          <section className="space-y-6 xl:sticky xl:top-10">
+            <div className="max-w-2xl space-y-5 reveal">
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-200/15 bg-amber-300/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-amber-100/85">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-200" />
+                Estimasi cepat
+              </div>
 
-              <h1 className="max-w-xl font-[family:var(--font-display)] text-6xl leading-[0.9] uppercase text-white sm:text-7xl lg:text-8xl">
-                WASTED
-                <br />
-                TIME
-                <br />
-                CALCULATOR
-              </h1>
+              <div className="space-y-4">
+                <h1 className="max-w-xl font-[family:var(--font-display)] text-5xl uppercase leading-[0.88] text-white sm:text-6xl md:text-7xl lg:text-[5.6rem] motion-title">
+                  Wasted
+                  <br />
+                  Time
+                  <br />
+                  Calculator
+                </h1>
 
-              <p className="mt-6 max-w-xl font-[family:var(--font-subtitle)] text-lg leading-8 text-slate-200 sm:text-xl">
-                Berapa banyak waktu hidup Anda yang telah dihabiskan untuk
-                aktivitas autopilot?
-              </p>
+                <p className="max-w-xl font-[family:var(--font-subtitle)] text-base leading-8 text-slate-200 sm:text-lg lg:text-xl">
+                  Lihat berapa banyak jam hidup yang sudah terserap ke
+                  kebiasaan autopilot. Isi data singkat, pilih satu jalan, lalu
+                  lihat hasilnya.
+                </p>
 
-              <p className="mt-4 max-w-xl text-sm leading-6 text-slate-400">
-                *Kalkulasi ini hanyalah estimasi. Kami mengasumsikan aktivitas
-                dilakukan secara konsisten sejak usia 10 tahun.
-              </p>
+                <div className="grid gap-3 text-sm text-slate-300 sm:grid-cols-3 reveal-delay-1">
+                  <div className="rounded-2xl border border-white/8 bg-white/5 px-4 py-3 transition duration-300 hover:-translate-y-0.5 hover:border-white/15 hover:bg-white/8">
+                    <p className="text-[10px] uppercase tracking-[0.24em] text-amber-100/75">
+                      01
+                    </p>
+                    <p className="mt-2 font-medium text-white">Isi nama dan usia</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/8 bg-white/5 px-4 py-3 transition duration-300 hover:-translate-y-0.5 hover:border-white/15 hover:bg-white/8">
+                    <p className="text-[10px] uppercase tracking-[0.24em] text-amber-100/75">
+                      02
+                    </p>
+                    <p className="mt-2 font-medium text-white">Pilih jalan hidup</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/8 bg-white/5 px-4 py-3 transition duration-300 hover:-translate-y-0.5 hover:border-white/15 hover:bg-white/8">
+                    <p className="text-[10px] uppercase tracking-[0.24em] text-amber-100/75">
+                      03
+                    </p>
+                    <p className="mt-2 font-medium text-white">Masukkan jam harian</p>
+                  </div>
+                </div>
+
+                <p className="max-w-xl text-sm leading-6 text-slate-400">
+                  *Kalkulasi ini hanyalah estimasi. Kami mengasumsikan aktivitas
+                  dilakukan secara konsisten sejak usia 10 tahun.
+                </p>
+              </div>
             </div>
 
-            <section className="rounded-[32px] border border-white/10 bg-white/8 p-5 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-6">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <section className="rounded-[32px] border border-white/10 bg-white/7 p-4 shadow-2xl shadow-black/25 backdrop-blur-xl transition duration-300 hover:border-white/15 sm:p-6 reveal-delay-2">
+              <div className="mb-5">
+                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.28em] text-slate-400">
+                  <span>Progress</span>
+                  <span>{formProgress}%</span>
+                </div>
+                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/8">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-200 gradient-sheen"
+                    style={{ width: `${formProgress}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 border-b border-white/8 pb-4 sm:flex-row sm:items-end sm:justify-between">
                 <div className="max-w-2xl">
                   <h2 className="text-xl font-semibold text-white">
-                    Jalan Hidupmu
+                    Pilih jalan hidup
                   </h2>
                   <p className="mt-2 max-w-xl text-sm leading-7 text-slate-300">
-                    Pilih satu arah yang paling terasa kamu banget. Deskripsi
-                    tiap jalan dibuat jelas supaya baseline yang kamu pilih
-                    langsung kebaca oleh AI.
+                    Pilih satu yang paling mendekati kamu.
                   </p>
                 </div>
                 <span
@@ -128,11 +171,11 @@ export default function Home() {
                       : "bg-emerald-500/15 text-emerald-200"
                   }`}
                 >
-                  {isLifePathMissing ? "Choose" : "Locked"}
+                  {isLifePathMissing ? "Pilih satu" : "Aktif"}
                 </span>
               </div>
 
-              <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {LIFE_PATHS.map((option) => {
                   const selected = lifePath === option.id;
 
@@ -141,37 +184,31 @@ export default function Home() {
                       key={option.id}
                       type="button"
                       onClick={() => setLifePath(option.id)}
-                      className={`group flex h-full min-h-[168px] flex-col rounded-[28px] border p-5 text-left transition-all duration-200 hover:-translate-y-1 ${
+                      className={`group flex h-full min-h-[168px] flex-col rounded-[26px] border p-4 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] sm:p-5 ${
                         selected
-                          ? "border-amber-300/70 bg-amber-300/12 shadow-lg shadow-amber-300/10"
+                          ? "border-amber-300/70 bg-amber-300/12 shadow-lg shadow-amber-300/10 choice-active ring-1 ring-amber-200/20"
                           : "border-white/10 bg-slate-950/40 hover:border-white/20 hover:bg-slate-950/55"
                       }`}
                     >
-                      <div className="flex items-start gap-4">
-                        <span className="text-4xl leading-none" aria-hidden="true">
+                      <div className="grid flex-1 grid-cols-[auto,1fr] gap-x-3 gap-y-2">
+                        <span
+                          className="row-span-2 text-4xl leading-none transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-110"
+                          aria-hidden="true"
+                        >
                           {option.emoji}
                         </span>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <p className="text-lg font-semibold text-white">
-                              {option.label}
-                            </p>
-                            {selected && (
-                              <span className="rounded-full border border-amber-200/40 bg-amber-200/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-amber-100">
-                                Active
-                              </span>
-                            )}
-                          </div>
-                          <p className="mt-2 text-[15px] leading-7 text-slate-200">
-                            {option.description}
+                        <div className="flex items-center gap-2">
+                          <p className="text-lg font-semibold text-white">
+                            {option.label}
                           </p>
+                          {selected && (
+                            <span className="rounded-full border border-amber-200/40 bg-amber-200/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-amber-100">
+                              Aktif
+                            </span>
+                          )}
                         </div>
-                      </div>
-
-                      <div className="mt-auto pt-4">
-                        <div className="h-px w-full bg-white/8" />
-                        <p className="mt-3 text-xs uppercase tracking-[0.25em] text-slate-500">
-                          {selected ? "Siap dipakai sebagai baseline" : "Ketuk untuk pilih jalur ini"}
+                        <p className="col-span-2 text-[15px] leading-7 text-slate-200">
+                          {option.description}
                         </p>
                       </div>
                     </button>
@@ -179,55 +216,33 @@ export default function Home() {
                 })}
               </div>
 
-              {lifePath && selectedLifePath && (
-                <div className="mt-5 rounded-[28px] border border-amber-200/20 bg-amber-300/10 p-4 sm:p-5">
-                  <div className="flex items-start gap-4">
-                    <span className="text-4xl">{selectedLifePath.emoji}</span>
-                    <div className="min-w-0">
-                      <p className="text-sm uppercase tracking-[0.25em] text-amber-100/80">
-                        baseline terpilih
-                      </p>
-                      <p className="mt-1 text-xl font-semibold text-white">
-                        {selectedLifePath.label}
-                      </p>
-                      <p className="mt-2 text-sm leading-7 text-slate-100">
-                        {selectedLifePath.description}
-                      </p>
-                      <p className="mt-3 inline-flex rounded-full border border-amber-100/20 bg-black/20 px-3 py-1 text-xs uppercase tracking-[0.22em] text-amber-50">
-                        Ini yang akan dipakai AI sebagai referensi utama
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
             </section>
           </section>
 
-          <section className="rounded-3xl border border-white/10 bg-white/8 p-5 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-6">
-            <div className="mb-5 rounded-3xl border border-amber-200/15 bg-black/20 p-4">
+          <section className="rounded-[32px] border border-white/10 bg-white/7 p-4 shadow-2xl shadow-black/25 backdrop-blur-xl transition duration-300 hover:border-white/15 sm:p-6 xl:sticky xl:top-10 reveal-delay-1">
+            <div className="mb-4 rounded-[26px] border border-amber-200/15 bg-black/20 p-4">
               <p className="text-xs uppercase tracking-[0.28em] text-amber-100/70">
-                baseline summary
+                Pilihan aktif
               </p>
               <div className="mt-3 flex items-start gap-3">
                 <span className="text-3xl" aria-hidden="true">
-                  {selectedLifePath?.emoji ?? "◌"}
+                  {selectedLifePath?.emoji ?? "\u25CC"}
                 </span>
                 <div className="min-w-0">
                   <p className="font-semibold text-white">
                     {selectedLifePath?.label ?? "Belum dipilih"}
                   </p>
                   <p className="mt-1 text-sm leading-6 text-slate-400">
-                    Pilih di panel kiri supaya cerita AI lebih tajam dan tidak
-                    terasa generik.
+                    Ini dipakai sebagai acuan hasil.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="grid gap-5">
+            <div className="grid gap-4 sm:gap-5">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-200">
-                  Nama atau Panggilan
+                  Nama atau panggilan
                 </label>
                 <input
                   type="text"
@@ -237,7 +252,9 @@ export default function Home() {
                   className={`w-full rounded-2xl border bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:ring-2 ${
                     isNameMissing
                       ? "border-red-500/80 focus:border-red-400 focus:ring-red-500/20"
-                      : "border-white/10 focus:border-amber-300/70 focus:ring-amber-300/20"
+                      : `border-white/10 focus:border-amber-300/70 focus:ring-amber-300/20 ${
+                          trimmedName ? "field-filled" : ""
+                        }`
                   }`}
                 />
                 {trimmedName && (
@@ -260,13 +277,15 @@ export default function Home() {
                   onChange={(e) => setAge(e.target.value)}
                   onBlur={() => {
                     if (isAgeInvalid) {
-                      alert("masukan usia antara 10-120");
+                      alert("Masukkan usia antara 10-120.");
                     }
                   }}
                   className={`w-full rounded-2xl border bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:ring-2 ${
                     isAgeInvalid
                       ? "border-red-500/80 focus:border-red-400 focus:ring-red-500/20"
-                      : "border-white/10 focus:border-amber-300/70 focus:ring-amber-300/20"
+                      : `border-white/10 focus:border-amber-300/70 focus:ring-amber-300/20 ${
+                          age ? "field-filled" : ""
+                        }`
                   }`}
                 />
               </div>
@@ -278,11 +297,9 @@ export default function Home() {
                     : "border-white/10 bg-black/15"
                 }`}
               >
-                <div className="mb-4 flex items-center justify-between gap-4">
+                <div className="mb-4 flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-lg font-semibold text-white">
-                      Aktivitas Harian
-                    </h2>
+                    <h2 className="text-lg font-semibold text-white">Jam harian</h2>
                     <p className="mt-1 text-sm text-slate-400">
                       Total: {dailyTotal.toFixed(1)} jam per hari
                     </p>
@@ -294,7 +311,7 @@ export default function Home() {
                         : "bg-emerald-500/15 text-emerald-200"
                     }`}
                   >
-                    {isDailyTotalInvalid ? "Invalid" : "Ready"}
+                    {isDailyTotalInvalid ? "Cek" : "Siap"}
                   </span>
                 </div>
 
@@ -337,8 +354,7 @@ export default function Home() {
                 </div>
 
                 <p className="mt-4 text-sm leading-6 text-slate-400">
-                  Isi total aktivitas dengan wajar. Kalau kosong atau lebih dari
-                  24 jam, tombol hitung akan dikunci.
+                  Isi jam per hari. Totalnya harus 24 atau kurang.
                 </p>
               </div>
 
@@ -390,7 +406,9 @@ function Field({
         className={`w-full rounded-2xl border bg-slate-950/60 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:ring-2 ${
           invalid
             ? "border-red-500/80 focus:border-red-400 focus:ring-red-500/20"
-            : "border-white/10 focus:border-amber-300/70 focus:ring-amber-300/20"
+            : `border-white/10 focus:border-amber-300/70 focus:ring-amber-300/20 ${
+                value.trim() ? "field-filled" : ""
+              }`
         }`}
       />
     </div>
