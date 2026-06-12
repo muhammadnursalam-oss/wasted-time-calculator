@@ -1,0 +1,88 @@
+{
+  "generatedAt": "2026-06-05T12:19:11.329Z",
+  "startedAt": "2026-06-05T12:16:43.876Z",
+  "model": "gpt-5.5",
+  "outputFile": "C:\\Users\\Lenovo\\wasted-time-calculator\\data\\openai-achievement-test-results.json",
+  "results": [
+    {
+      "totalHours": 50,
+      "ok": true,
+      "startedAt": "2026-06-05T12:16:43.878Z",
+      "completedAt": "2026-06-05T12:16:54.747Z",
+      "title": "FINIS 10K DI JAKARTA MARATHON",
+      "description": "Bayangkan jika seluruh 50 jam itu kamu fokuskan ke satu garis finis. Dari lari pendek yang napasnya masih berantakan, kamu pelan-pelan mengumpulkan pagi-pagi latihan, sepatu basah, dan putaran kecil di sekitar rumah. Lalu suatu pagi di Jakarta Marathon, kamu melewati garis finis 10K dengan medali di leher—bukti nyata bahwa 50 jam bisa berubah jadi momen yang akan kamu ingat lama."
+    },
+    {
+      "totalHours": 125,
+      "ok": true,
+      "startedAt": "2026-06-05T12:16:54.748Z",
+      "completedAt": "2026-06-05T12:17:08.035Z",
+      "title": "ZINE PERTAMA DI COMIFURO",
+      "description": "Bayangkan 125 jam itu kamu tuangkan ke satu karya kecil. Dari sketsa berantakan di meja kamar, kamu pelan-pelan menyusun halaman, begadang memilih font, lalu mencetak beberapa puluh eksemplar. Di hari Comifuro, tanganmu sedikit gemetar saat orang pertama berhenti di booth, membuka zine itu, lalu membelinya. Kecil, tapi nyata: ada karya buatanmu yang pulang dibawa orang lain."
+    },
+    {
+      "totalHours": 250,
+      "ok": true,
+      "startedAt": "2026-06-05T12:17:08.036Z",
+      "completedAt": "2026-06-05T12:17:18.193Z",
+      "title": "APLIKASI PERTAMA DI GOOGLE PLAY STORE",
+      "description": "Bayangkan 250 jam itu kamu fokuskan ke satu proyek kecil. Dimulai dari ide sederhana di notes HP, kamu melewati malam-malam debugging, ikon aplikasi yang diganti berkali-kali, dan formulir Google Play Console yang terasa menegangkan. Lalu suatu pagi, statusnya berubah menjadi published—aplikasi buatanmu benar-benar bisa dicari, diunduh, dan dipakai orang lain."
+    },
+    {
+      "totalHours": 750,
+      "ok": true,
+      "startedAt": "2026-06-05T12:17:18.194Z",
+      "completedAt": "2026-06-05T12:17:38.041Z",
+      "title": "JLPT N3 DI JAPAN FOUNDATION",
+      "description": "Bayangkan jika 750 jam itu kamu tuangkan ke satu tujuan yang jelas. Dari hiragana yang dulu masih tertukar, kamu pelan-pelan mengisi pagi dan malam dengan kanji, listening, dan latihan soal yang bikin kepala penuh. Lalu suatu hari di ruang ujian Japan Foundation, kamu membuka amplop hasil dan melihat tulisan lulus JLPT N3. Bukan cuma bisa membaca Jepang lebih jauh—kamu punya bukti nyata bahwa 750 jam bisa berubah jadi pintu baru."
+    },
+    {
+      "totalHours": 1250,
+      "ok": true,
+      "startedAt": "2026-06-05T12:17:38.042Z",
+      "completedAt": "2026-06-05T12:17:52.885Z",
+      "title": "GAME PERTAMA RILIS DI STEAM",
+      "description": "Bayangkan jika seluruh 1.250 jam itu kamu fokuskan ke satu proyek kecil yang nekat. Awalnya cuma prototype berantakan di laptop, lalu berubah jadi malam-malam panjang memperbaiki bug, menggambar ulang aset, dan membaca komentar playtester. Sampai suatu hari, halaman Steam-mu benar-benar aktif, tombol “Release” ditekan, dan game pertamamu bisa dibeli orang asing yang bahkan tidak tahu siapa kamu."
+    },
+    {
+      "totalHours": 3000,
+      "ok": true,
+      "startedAt": "2026-06-05T12:17:52.885Z",
+      "completedAt": "2026-06-05T12:18:03.640Z",
+      "title": "PULL REQUEST DITERIMA REACT",
+      "description": "Bayangkan 3.000 jam itu kamu curahkan ke satu repo yang dipakai jutaan developer. Awalnya kamu hanya membaca issue di GitHub sambil bingung dengan komentar maintainer yang singkat-singkat. Setelah berbulan-bulan memperbaiki bug kecil, menulis test, dan menunggu CI hijau, satu notifikasi akhirnya muncul: pull request-mu di-merge ke React. Di timeline hidup yang berbeda, namamu tercatat di salah satu proyek open source paling berpengaruh di dunia."
+    },
+    {
+      "totalHours": 5000,
+      "ok": true,
+      "startedAt": "2026-06-05T12:18:03.640Z",
+      "completedAt": "2026-06-05T12:18:21.628Z",
+      "title": "TEDX JAKARTA PERTAMA",
+      "description": "Bayangkan 5.000 jam itu kamu taruh di satu ambisi yang benar-benar kamu kejar. Semuanya mungkin dimulai dari presentasi kecil di ruang kelas, suara masih gemetar dan slide masih berantakan. Setelah ratusan latihan, revisi naskah tengah malam, dan banyak panggung kecil yang sepi, namamu akhirnya muncul di rundown TEDx Jakarta. Saat lampu panggung menyala dan mikrofon terpasang, 5.000 jam itu berubah jadi satu momen yang tidak akan kamu lupakan."
+    },
+    {
+      "totalHours": 9000,
+      "ok": true,
+      "startedAt": "2026-06-05T12:18:21.628Z",
+      "completedAt": "2026-06-05T12:18:37.021Z",
+      "title": "SABUK HITAM BJJ DI PODIUM IBJJF ASIA",
+      "description": "Bayangkan jika seluruh 9.000 jam itu kamu fokuskan ke satu ambisi. Perjalananmu dimulai dari matras tipis di gym kecil, pulang dengan gi basah, jari lecet, dan badan pegal hampir tiap malam. Bertahun-tahun kemudian, setelah turnamen lokal, cedera kecil, dan ribuan ronde sparring, namamu dipanggil di podium IBJJF Asian Championship dengan sabuk hitam melingkar di pinggang. Di momen itu, 9.000 jam bukan lagi angka—itu jadi cerita hidup yang bisa kamu tunjuk dengan kedua tangan."
+    },
+    {
+      "totalHours": 15000,
+      "ok": true,
+      "startedAt": "2026-06-05T12:18:37.022Z",
+      "completedAt": "2026-06-05T12:18:54.232Z",
+      "title": "PROMOSI DOKTOR DI AULA BARAT ITB",
+      "description": "15.000 jam terdengar biasa, sampai kamu membayangkan namamu dipanggil di sidang promosi doktor. Perjalanan itu dimulai dari meja kecil, tumpukan jurnal, eksperimen yang gagal, revisi pembimbing, dan malam-malam ketika data tidak mau masuk akal. Bertahun-tahun kemudian, kamu berdiri di depan penguji di Aula Barat ITB, mempertahankan disertasi yang dulu hanya berupa ide mentah. Saat palu sidang diketuk dan gelar doktor diumumkan, semua jam sunyi itu berubah menjadi satu momen yang sulit dilupakan."
+    },
+    {
+      "totalHours": 24000,
+      "ok": true,
+      "startedAt": "2026-06-05T12:18:54.233Z",
+      "completedAt": "2026-06-05T12:19:11.327Z",
+      "title": "KONTRAK AKUISISI DI KANTOR GOOGLE",
+      "description": "Dengan 24.000 jam yang sama, satu ambisi bisa tumbuh jadi sesuatu yang mengubah hidup. Versi lain dari hidupmu mungkin dimulai dari meja kecil, prototype yang sering crash, dan pitch deck yang berkali-kali ditolak investor. Setelah bertahun-tahun membangun produk, merekrut tim pertama, dan melewati malam-malam panjang sebelum demo besar, kamu akhirnya duduk di ruang rapat Google menatap kontrak akuisisi di atas meja. Saat tanda tangan terakhir selesai, semua jam yang dulu terasa biasa berubah menjadi satu momen yang sulit dipercaya."
+    }
+  ]
+}

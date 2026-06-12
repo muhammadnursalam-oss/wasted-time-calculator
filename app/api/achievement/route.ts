@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { buildAchievementPrompt } from "@/lib/achievement-prompt";
 import { getClosestAchievementRecord } from "@/lib/result-store";
+import { normalizeLifePath } from "@/lib/life-paths";
 
 type AchievementResult = {
   title: string;
@@ -52,13 +54,20 @@ function getOutputText(data: OpenAIResponse): string {
   );
 }
 
-async function getFallbackAchievement(totalHours: number) {
-  const record = await getClosestAchievementRecord(totalHours);
+async function getFallbackAchievement(
+  totalHours: number,
+  lifePath?: string
+) {
+  const normalizedLifePath = normalizeLifePath(lifePath);
+  const record = await getClosestAchievementRecord(totalHours, normalizedLifePath);
   return record ?? fallbackAchievement;
 }
 
 export async function POST(request: Request) {
-  const { totalHours } = (await request.json()) as { totalHours?: number };
+  const { totalHours, lifePath } = (await request.json()) as {
+    totalHours?: number;
+    lifePath?: string;
+  };
 
   if (typeof totalHours !== "number" || !Number.isFinite(totalHours)) {
     return NextResponse.json(
@@ -68,8 +77,13 @@ export async function POST(request: Request) {
   }
 
   if (!process.env.OPENAI_API_KEY) {
-    return NextResponse.json(await getFallbackAchievement(totalHours));
+    return NextResponse.json(await getFallbackAchievement(totalHours, lifePath));
   }
+
+  const prompt = buildAchievementPrompt({
+    totalHours,
+    lifePath: normalizeLifePath(lifePath),
+  });
 
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -82,219 +96,11 @@ export async function POST(request: Request) {
       input: [
         {
           role: "developer",
-          content:
-            `Given a total number of hours, generate ONE alternative-life achievement that someone could realistically reach with the same amount of dedicated effort.
-
-The purpose is not to show a skill.
-
-The purpose is to show a memorable moment from an alternate version of the person's life.
-
-The result should feel emotional, visual, relatable, and inspiring.
-
-The reader should immediately imagine themselves in that situation and think:
-
-"Wah... sebanyak itu ya."
-
----
-
-## OUTPUT FORMAT
-
-TITLE: [SHORT, PUNCHY, ALL CAPS]
-
-OPENING: [One short sentence.]
-
-DESCRIPTION: [2–4 sentences telling the story behind the achievement.]
-
----
-
-## TITLE RULES
-
-The title is the most important part.
-
-The title must describe a specific moment, milestone, event, or scene.
-
-Do NOT describe a skill.
-
-Bad:
-
-* MENJADI PROGRAMMER
-* BELAJAR BAHASA JEPANG
-* MENJADI PETARUNG MMA
-* MEMBUAT BISNIS
-
-Good:
-
-* CO-MAIN EVENT UFC FIGHT NIGHT
-* SIDANG SKRIPSI DENGAN REVISI MINIM
-* VIDEO YOUTUBE KE-500
-* PULL REQUEST DITERIMA GOOGLE
-* GARIS FINIS TOKYO MARATHON
-* PELUNCURAN APLIKASI PERTAMA DI PLAY STORE
-* PANGGUNG TEDX PERTAMA
-* SABUK HITAM BJJ
-* BUKU PERTAMA TERPAJANG DI GRAMEDIA
-* KLIEN LUAR NEGERI PERTAMA
-
-Use:
-
-* Real events
-* Real platforms
-* Real competitions
-* Real companies
-* Real cities
-* Real organizations
-* Real certifications
-* Real public figures
-
-The title should feel like a movie scene, not a résumé bullet point.
-
----
-
-## OPENING RULES
-
-The opening is always a short hook.
-
-The meaning should always be:
-
-"Imagine if you invested this amount of time into one meaningful goal."
-
-Use natural variations.
-
-Examples:
-
-* Bayangkan jika seluruh X jam itu kamu fokuskan ke satu ambisi.
-* Dengan X jam yang sama, kamu bisa menjalani perjalanan yang sangat berbeda.
-* Jika semua X jam itu dihabiskan untuk satu tujuan, hasilnya bisa mengejutkan.
-* Sebanyak itulah waktu yang dibutuhkan untuk mengubah hobi menjadi pencapaian nyata.
-* Bagaimana jika seluruh X jam itu kamu investasikan ke satu mimpi?
-* Dalam rentang X jam yang sama, banyak orang membangun sesuatu yang mengubah hidup mereka.
-* X jam mungkin terdengar biasa. Sampai kamu melihat apa yang bisa lahir darinya.
-
-Keep it under 20 words.
-
----
-
-## DESCRIPTION RULES
-
-Do not explain the skill.
-
-Tell the story.
-
-The description should feel like a snapshot from an alternate life.
-
-The reader should be able to picture the scene.
-
-Use sensory and emotional details when appropriate.
-
-Include:
-
-* The starting point
-* The struggle
-* The progress
-* The memorable moment
-
-The description should feel personal.
-
-Instead of:
-
-"Anda dapat belajar MMA dan meningkatkan kemampuan bertarung."
-
-Write:
-
-"Ribuan ronde sparring, latihan fisik yang melelahkan, dan pertandingan kecil yang nyaris tak ada penonton perlahan membentuk reputasimu. Bertahun-tahun kemudian, saat lampu arena menyala dan namamu dipanggil menuju oktagon untuk menghadapi petarung elite seperti Khamzat Chimaev, semua jam latihan itu akhirnya terasa nyata."
-
-Instead of:
-
-"Anda dapat membangun channel YouTube."
-
-Write:
-
-"Awalnya videomu hanya ditonton belasan orang. Namun setelah ratusan jam menulis naskah, mengedit, dan mengunggah tanpa henti, kamu akhirnya menekan tombol publish untuk video ke-500. Arsip karya yang dulu hanya mimpi kini memenuhi satu channel yang benar-benar milikmu."
-
----
-
-## SCALING RULES
-
-Match the achievement to the supplied hours.
-
-50–200 hours:
-Small but memorable moments.
-
-Examples:
-
-* Lari 10K Pertama
-* Video YouTube ke-10
-* Turnamen Catur Pertama
-
-200–1,000 hours:
-Major personal milestones.
-
-Examples:
-
-* Half Marathon
-* Aplikasi Pertama
-* Percakapan Lancar dengan Turis Jepang
-* Sertifikasi Profesional
-
-1,000–5,000 hours:
-Significant achievements.
-
-Examples:
-
-* Video YouTube ke-100
-* Klien Internasional Pertama
-* Sabuk Biru BJJ
-* Sidang Skripsi
-
-5,000–15,000 hours:
-Elite accomplishments.
-
-Examples:
-
-* Sabuk Hitam BJJ
-* Co-Main Event UFC Fight Night
-* Buku Pertama di Gramedia
-* Channel YouTube dengan Ratusan Video
-
-15,000+ hours:
-Life-defining moments.
-
-Examples:
-
-* Gelar Doktor
-* Pembicara TEDx
-* Ironman Finisher
-* Startup dengan Tim Sendiri
-* Karya yang Menjadi Referensi Banyak Orang
-
----
-
-## TONE
-
-* Casual
-* Human
-* Emotional
-* Inspirational
-* Cinematic
-* Specific
-* Visual
-
-Avoid:
-
-* Corporate language
-* Formal language
-* Generic achievements
-* Empty motivation
-* Guilt-tripping
-* Uncertainty words (mungkin, barangkali, bisa jadi, kemungkinan)
-
-Every output should feel like a scene from an alternate version of the user's life.`
+          content: prompt.developer,
         },
         {
           role: "user",
-          content: `Total available practice/work time: ${Math.round(
-            totalHours
-          ).toLocaleString("en-US")} hours. Generate the single most wow real-life achievement comparison for this amount of time. Make the years / hours stated in the result similar to the total hours in the input`,
+          content: prompt.user,
         },
       ],
       text: {
@@ -324,13 +130,13 @@ Every output should feel like a scene from an alternate version of the user's li
   });
 
   if (!response.ok) {
-    return NextResponse.json(await getFallbackAchievement(totalHours));
+    return NextResponse.json(await getFallbackAchievement(totalHours, lifePath));
   }
 
   try {
     const data = (await response.json()) as OpenAIResponse;
     return NextResponse.json(parseAchievementResult(getOutputText(data)));
   } catch {
-    return NextResponse.json(await getFallbackAchievement(totalHours));
+    return NextResponse.json(await getFallbackAchievement(totalHours, lifePath));
   }
 }

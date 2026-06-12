@@ -1,8 +1,11 @@
+import type { LifePathId } from "@/lib/life-paths";
+
 export type ResultRecord = {
   id: string;
   fingerprint: string;
   name: string;
   age: number;
+  lifePath: LifePathId;
   gaming: number;
   video: number;
   socialMedia: number;

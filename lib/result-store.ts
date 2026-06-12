@@ -1,12 +1,18 @@
 import { neon } from "@neondatabase/serverless";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
+import {
+  DEFAULT_LIFE_PATH_ID,
+  normalizeLifePath,
+  type LifePathId,
+} from "@/lib/life-paths";
 
 export type ResultRecord = {
   id: string;
   fingerprint: string;
   name: string;
   age: number;
+  lifePath: LifePathId;
   gaming: number;
   video: number;
   socialMedia: number;
@@ -35,6 +41,7 @@ const createTableSql = `
     fingerprint TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
     age INTEGER NOT NULL,
+    life_path TEXT NOT NULL,
     gaming DOUBLE PRECISION NOT NULL,
     video DOUBLE PRECISION NOT NULL,
     social_media DOUBLE PRECISION NOT NULL,
@@ -62,6 +69,10 @@ async function ensureDatabase() {
     []
   );
   await sql.query(
+    `ALTER TABLE result_records ADD COLUMN IF NOT EXISTS life_path TEXT`,
+    []
+  );
+  await sql.query(
     `CREATE UNIQUE INDEX IF NOT EXISTS result_records_fingerprint_idx ON result_records (fingerprint)`,
     []
   );
@@ -73,6 +84,9 @@ function rowToRecord(row: Record<string, unknown>): ResultRecord {
     fingerprint: String(row.fingerprint),
     name: String(row.name),
     age: Number(row.age),
+    lifePath: normalizeLifePath(
+      typeof row.life_path === "string" ? row.life_path : DEFAULT_LIFE_PATH_ID
+    ),
     gaming: Number(row.gaming),
     video: Number(row.video),
     socialMedia: Number(row.social_media),
@@ -98,14 +112,27 @@ async function readLocalResults(): Promise<ResultRecord[]> {
       return [];
     }
 
-    return parsed.filter((item): item is ResultRecord => {
-      return (
-        typeof item === "object" &&
-        item !== null &&
-        typeof (item as ResultRecord).id === "string" &&
-        typeof (item as ResultRecord).fingerprint === "string" &&
-        typeof (item as ResultRecord).name === "string"
-      );
+    return parsed.flatMap((item) => {
+      if (typeof item !== "object" || item === null) {
+        return [];
+      }
+
+      const candidate = item as Partial<ResultRecord> & { lifePath?: string };
+
+      if (
+        typeof candidate.id !== "string" ||
+        typeof candidate.fingerprint !== "string" ||
+        typeof candidate.name !== "string"
+      ) {
+        return [];
+      }
+
+      return [
+        {
+          ...(candidate as ResultRecord),
+          lifePath: normalizeLifePath(candidate.lifePath),
+        },
+      ];
     });
   } catch {
     return [];
@@ -128,6 +155,7 @@ export async function saveResultRecord(
         fingerprint,
         name,
         age,
+        life_path,
         gaming,
         video,
         social_media,
@@ -146,6 +174,7 @@ export async function saveResultRecord(
         ${record.fingerprint},
         ${record.name},
         ${record.age},
+        ${record.lifePath},
         ${record.gaming},
         ${record.video},
         ${record.socialMedia},
@@ -183,6 +212,7 @@ export async function getResultRecordById(
         fingerprint,
         name,
         age,
+        life_path,
         gaming,
         video,
         social_media,
@@ -220,6 +250,7 @@ export async function getResultRecordByFingerprint(
         fingerprint,
         name,
         age,
+        life_path,
         gaming,
         video,
         social_media,
@@ -247,11 +278,29 @@ export async function getResultRecordByFingerprint(
 }
 
 export async function getClosestAchievementRecord(
-  totalHours: number
+  totalHours: number,
+  lifePath?: LifePathId
 ): Promise<{ title: string; description: string } | null> {
   if (sql) {
     await ensureDatabase();
-    const rows = await sql`
+
+    const preferredRows =
+      lifePath &&
+      (await sql`
+        SELECT
+          achievement_title,
+          achievement_description
+        FROM result_records
+        WHERE achievement_title IS NOT NULL
+          AND achievement_title <> ''
+          AND achievement_description IS NOT NULL
+          AND achievement_description <> ''
+          AND life_path = ${lifePath}
+        ORDER BY ABS(total_hours - ${totalHours}), RANDOM()
+        LIMIT 1
+      `);
+
+    const fallbackRows = await sql`
       SELECT
         achievement_title,
         achievement_description
@@ -264,7 +313,9 @@ export async function getClosestAchievementRecord(
       LIMIT 1
     `;
 
-    const row = rows[0] as Record<string, unknown> | undefined;
+    const row =
+      (preferredRows?.[0] as Record<string, unknown> | undefined) ??
+      (fallbackRows[0] as Record<string, unknown> | undefined);
 
     if (!row) {
       return null;
@@ -276,5 +327,27 @@ export async function getClosestAchievementRecord(
     };
   }
 
-  return null;
+  const results = await readLocalResults();
+  const preferredPool = lifePath
+    ? results.filter((record) => record.lifePath === lifePath)
+    : results;
+  const pool = preferredPool.length > 0 ? preferredPool : results;
+
+  const closest = pool.reduce<ResultRecord | null>((best, current) => {
+    if (!best) {
+      return current;
+    }
+
+    const bestDistance = Math.abs(best.totalHours - totalHours);
+    const currentDistance = Math.abs(current.totalHours - totalHours);
+
+    return currentDistance < bestDistance ? current : best;
+  }, null);
+
+  return closest
+    ? {
+        title: closest.achievementTitle,
+        description: closest.achievementDescription,
+      }
+    : null;
 }

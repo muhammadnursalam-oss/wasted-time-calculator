@@ -15,6 +15,7 @@ import {
   type ResultRecord,
 } from "./utils/results";
 import { generateBrowserFingerprint } from "./utils/fingerprint";
+import { getLifePathById, normalizeLifePath } from "@/lib/life-paths";
 
 type Category = {
   label: string;
@@ -55,6 +56,8 @@ function ResultContent() {
   const [resultId, setResultId] = useState(recordIdFromUrl);
 
   const name = (params.get("name") || "").trim();
+  const lifePath = normalizeLifePath(params.get("lifePath"));
+  const selectedLifePath = getLifePathById(storedRecord?.lifePath ?? lifePath);
   const age = Number(params.get("age") || 0);
   const gaming = Number(params.get("gaming") || 0);
   const video = Number(params.get("video") || 0);
@@ -85,6 +88,7 @@ function ResultContent() {
     fingerprint: "",
     name,
     age,
+    lifePath,
     gaming: gamingHours,
     video: videoHours,
     socialMedia: socialMediaHours,
@@ -179,7 +183,7 @@ function ResultContent() {
           return;
         }
 
-        const achievement = await getAchievementResult(totalHours);
+        const achievement = await getAchievementResult(totalHours, lifePath);
 
         if (!isActive) {
           return;
@@ -191,6 +195,7 @@ function ResultContent() {
           fingerprint,
           name,
           age,
+          lifePath,
           gaming: gamingHours,
           video: videoHours,
           socialMedia: socialMediaHours,
@@ -251,6 +256,7 @@ function ResultContent() {
     browsingHours,
     daydreamingHours,
     gamingHours,
+    lifePath,
     name,
     rank?.description,
     rank?.name,
@@ -287,8 +293,8 @@ function ResultContent() {
   const formattedDisplayedHours = Math.round(displayedHours).toLocaleString();
   const shareId = resultId || renderRecord.id;
   const shareText = renderRecord.achievementTitle
-    ? `Halo! Aku baru saja cek Wasted Time Calculator dan hasilku menunjukkan ${renderRecord.totalHours.toLocaleString()} jam waktu autopilot. Achievement-ku: ${renderRecord.achievementTitle}. Yuk lihat juga hasilmu.`
-    : `Halo! Aku baru saja cek Wasted Time Calculator dan hasilku menunjukkan ${renderRecord.totalHours.toLocaleString()} jam waktu autopilot. Yuk lihat juga hasilmu.`;
+    ? `Halo! Aku baru saja cek Wasted Time Calculator dan hasilku menunjukkan ${renderRecord.totalHours.toLocaleString()} jam waktu autopilot. Jalan hidupku: ${selectedLifePath.label}. Achievement-ku: ${renderRecord.achievementTitle}. Yuk lihat juga hasilmu.`
+    : `Halo! Aku baru saja cek Wasted Time Calculator dan hasilku menunjukkan ${renderRecord.totalHours.toLocaleString()} jam waktu autopilot. Jalan hidupku: ${selectedLifePath.label}. Yuk lihat juga hasilmu.`;
 
   async function handleShareResult() {
     const shareUrl = shareId
@@ -359,10 +365,20 @@ function ResultContent() {
                   {renderRecord.name}
                 </p>
               )}
+              <div className="mt-4 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm text-slate-100">
+                <span className="text-lg" aria-hidden="true">
+                  {selectedLifePath.emoji}
+                </span>
+                <span>
+                  Jalan hidup:{" "}
+                  <strong className="text-white">{selectedLifePath.label}</strong>
+                </span>
+              </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <StatCard label="Rank" value={renderRecord.rankName || "-"} />
+              <StatCard label="Jalan Hidup" value={selectedLifePath.label} />
               <StatCard
                 label="Total Hari"
                 value={`${renderRecord.totalDays.toLocaleString()} hari`}
@@ -440,6 +456,23 @@ function ResultContent() {
             </div>
 
             <div className="space-y-3">
+              <div className="rounded-3xl border border-amber-200/20 bg-amber-300/10 p-4">
+                <p className="text-xs uppercase tracking-[0.25em] text-amber-100/80">
+                  jalan hidup yang dipilih
+                </p>
+                <div className="mt-3 flex items-start gap-3">
+                  <span className="text-3xl">{selectedLifePath.emoji}</span>
+                  <div>
+                    <p className="font-semibold text-white">
+                      {selectedLifePath.label}
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-slate-300">
+                      {selectedLifePath.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {categories.map((category) => (
                 <div
                   key={category.label}

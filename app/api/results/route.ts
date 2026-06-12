@@ -5,6 +5,7 @@ import {
   saveResultRecord,
   type ResultRecord,
 } from "@/lib/result-store";
+import { normalizeLifePath } from "@/lib/life-paths";
 
 type ResultInput = Omit<ResultRecord, "id" | "createdAt">;
 
@@ -36,6 +37,8 @@ function parseInput(body: unknown): ResultInput | null {
   const totalHours = toNumber(data.totalHours);
   const totalDays = toNumber(data.totalDays);
   const totalYears = toNumber(data.totalYears);
+  const lifePath =
+    typeof data.lifePath === "string" ? normalizeLifePath(data.lifePath) : null;
 
   if (
     age === null ||
@@ -47,6 +50,7 @@ function parseInput(body: unknown): ResultInput | null {
     totalHours === null ||
     totalDays === null ||
     totalYears === null ||
+    lifePath === null ||
     typeof data.rankName !== "string" ||
     typeof data.rankDescription !== "string" ||
     typeof data.achievementTitle !== "string" ||
@@ -58,6 +62,7 @@ function parseInput(body: unknown): ResultInput | null {
   return {
     name,
     age,
+    lifePath,
     gaming,
     video,
     socialMedia,

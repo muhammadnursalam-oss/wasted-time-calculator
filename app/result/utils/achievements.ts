@@ -1,17 +1,20 @@
+import type { LifePathId } from "@/lib/life-paths";
+
 export type AchievementResult = {
   title: string;
   description: string;
 };
 
 export async function getAchievementResult(
-  totalHours: number
+  totalHours: number,
+  lifePath: LifePathId
 ): Promise<AchievementResult> {
   const response = await fetch("/api/achievement", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ totalHours }),
+    body: JSON.stringify({ totalHours, lifePath }),
   });
 
   if (!response.ok) {

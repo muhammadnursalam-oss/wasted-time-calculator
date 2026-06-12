@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "id": "cd39ab84-b919-47ad-bbc8-527dbfd49b3b",
+    "createdAt": "2026-06-05T12:12:54.737Z",
+    "name": "yunus",
+    "age": 24,
+    "gaming": 15330,
+    "video": 20440,
+    "socialMedia": 15330,
+    "browsing": 5110,
+    "daydreaming": 20440,
+    "totalHours": 76650,
+    "totalDays": 3193.75,
+    "totalYears": 8.75,
+    "rankName": "🌌 Master of Lost Hours",
+    "rankDescription": "Ribuan hari telah berlalu. Angka ini mulai sulit dibayangkan oleh manusia biasa.",
+    "achievementTitle": "DOKTOR UGM DI USIA 40-AN",
+    "achievementDescription": "Dalam 76.650 jam yang sama, hidupmu bisa berubah jadi perjalanan riset panjang yang dimulai dari meja sempit, tumpukan jurnal, dan revisi yang tidak ada habisnya. Bertahun-tahun kamu bolak-balik ke kampus, presentasi di seminar, dan bertahan lewat malam-malam yang hanya diisi kopi dan catatan. Lalu suatu hari, di ruang sidang UGM, namamu dipanggil untuk mempertahankan disertasi—dan semua jam itu akhirnya terasa nyata.",
+    "fingerprint": "87d2e2eaa06783db15240303f4ccc8b6e38253e9a89ffa7b228a645f41b5b43d",
+    "lifePath": "pembangun"
+  },
+  {
+    "id": "427bc1d8-c2ba-4457-8c9b-4e3f8d8a6e2c",
+    "createdAt": "2026-06-12T08:27:21.363Z",
+    "name": "i",
+    "age": 28,
+    "lifePath": "inspirator",
+    "gaming": 13140,
+    "video": 13140,
+    "socialMedia": 6570,
+    "browsing": 13140,
+    "daydreaming": 19710,
+    "totalHours": 65700,
+    "totalDays": 2737.5,
+    "totalYears": 7.5,
+    "rankName": "👑 Time Lord",
+    "rankDescription": "Mengendalikan waktu? Nope. Dikuasai oleh waktu? Mungkin.",
+    "achievementTitle": "KEYNOTE UNESCO GLOBAL EDUCATION MEETING DI PARIS",
+    "achievementDescription": "Dengan 65.700 jam—hampir 30 tahun fokus—hidupmu bisa berubah jadi gerakan yang benar-benar menyentuh banyak orang. Semuanya dimulai dari kelas kecil di balai RW, mengajar anak-anak yang datang dengan buku bekas dan mimpi yang masih malu-malu. Tahun demi tahun, kamu melatih relawan, membangun program mentoring, masuk ke desa-desa, sekolah, dan komunitas yang sering luput dari perhatian. Lalu suatu pagi di Paris, namamu dipanggil di UNESCO Global Education Meeting, dan kamu berdiri di podium untuk menceritakan bagaimana ribuan hidup berubah karena satu orang memilih terus mengajar.",
+    "fingerprint": "866cbb966190a12065b90c2714cc7d344fbc4ae1d8a5814207c131421fde424e"
+  }
+]
